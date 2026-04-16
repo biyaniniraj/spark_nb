@@ -1,0 +1,32 @@
+/* ── Design Tokens — extracted from Spark0414.html ── */
+:root {
+  /* Colours */
+  --navy:       #0F2044;
+  --navy2:      #162B44;
+  --teal:       #0EA5A0;
+  --teal2:      #14B8A6;
+  --teal-light: #E0F2FE;
+  --amber:      #F59E0B;
+  --amber-light:#FEF3C7;
+  --white:      #FFFFFF;
+  --off:        #F0F9F8;
+  --gray:       #64748B;
+  --lgray:      #E2E8F0;
+  --dktext:     #1E293B;
+  --muted:      #94A3B8;
+  --green:      #10B981;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  /* Shape */
+  --radius:    12px;
+  --radius-sm: 8px;
+
+  /* Elevation */
+  --shadow: 0 4px 24px rgba(15,32,68,0.10);
+
+  /* Motion */
+  --transition: 0.22s cubic-bezier(.4,0,.2,1);
+}

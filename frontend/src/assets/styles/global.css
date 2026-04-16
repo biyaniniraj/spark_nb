@@ -1,0 +1,113 @@
+/* ── Global styles — extracted from Spark0414.html ── */
+@import './tokens.css';
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body { font-family: var(--font-body); color: var(--dktext); background: var(--off); min-height: 100vh; }
+
+/* ── Layout ── */
+.hidden { display: none !important; }
+
+/* ── Navigation ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--navy);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 60px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+.nav-logo { font-family: var(--font-display); color: var(--white); font-size: 1.35rem; cursor: pointer; }
+.nav-logo span { color: var(--teal2); }
+.nav-links { display: flex; align-items: center; gap: 1.5rem; }
+.nav-links a { color: var(--muted); font-size: 0.875rem; cursor: pointer; text-decoration: none; transition: color var(--transition); }
+.nav-links a:hover, .nav-links a.active { color: var(--teal2); }
+.nav-right { display: flex; align-items: center; gap: 1rem; }
+.nav-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--teal); color: var(--white);
+  font-size: 0.8rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  background: var(--white); border-bottom: 1px solid var(--lgray);
+  padding: 0.6rem 2rem; font-size: 0.8rem; color: var(--muted);
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.breadcrumb span { cursor: pointer; }
+.breadcrumb span:hover { color: var(--teal); }
+.breadcrumb .sep { color: var(--lgray); }
+.breadcrumb .current { color: var(--dktext); font-weight: 500; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.7rem 1.5rem; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.9rem; font-weight: 500;
+  cursor: pointer; border: none; transition: all var(--transition);
+}
+.btn-primary  { background: var(--teal); color: var(--white); }
+.btn-primary:hover { background: var(--teal2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14,165,160,0.35); }
+.btn-outline  { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); }
+.btn-outline:hover { background: var(--teal-light); }
+.btn-amber    { background: var(--amber); color: var(--navy); }
+.btn-amber:hover  { background: #FBBF24; transform: translateY(-1px); }
+.btn-ghost    { background: transparent; color: var(--gray); border: 1.5px solid var(--lgray); }
+.btn-ghost:hover  { border-color: var(--teal); color: var(--teal); }
+.btn-purple   { background: #7C3AED; color: var(--white); border: none; }
+.btn-purple:hover { background: #6D28D9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.35); }
+.btn-lg  { padding: 0.9rem 2rem; font-size: 1rem; border-radius: var(--radius); }
+.btn-sm  { padding: 0.45rem 1rem; font-size: 0.8rem; }
+
+/* ── Forms ── */
+.form-group { margin-bottom: 1.2rem; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 500; color: var(--gray); margin-bottom: 0.4rem; letter-spacing: 0.03em; }
+.form-input {
+  width: 100%; padding: 0.7rem 1rem;
+  border: 1.5px solid var(--lgray); border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.9rem; color: var(--dktext);
+  background: var(--white); transition: border-color var(--transition); outline: none;
+}
+.form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(14,165,160,0.12); }
+.form-input::placeholder { color: var(--muted); }
+.search-wrap { position: relative; }
+.search-wrap input { padding-left: 2.6rem; }
+.search-wrap .search-icon { position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+
+/* ── Badges ── */
+.badge { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+.badge-teal  { background: var(--teal-light); color: #0369A1; }
+.badge-amber { background: var(--amber-light); color: #92400E; }
+.badge-navy  { background: var(--navy); color: var(--teal2); }
+.badge-green { background: #D1FAE5; color: #065F46; }
+
+/* ── Page hero ── */
+.page-hero { background: var(--navy); padding: 2.5rem 2rem 2rem; }
+.page-hero-inner { max-width: 960px; margin: 0 auto; }
+.page-hero h1 { font-family: var(--font-display); color: var(--white); font-size: 1.8rem; margin-bottom: 0.4rem; }
+.page-hero p  { color: var(--muted); font-size: 0.9rem; }
+.page-body    { flex: 1; max-width: 960px; margin: 0 auto; width: 100%; padding: 2rem; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 1.5rem; right: 1.5rem;
+  background: var(--navy); color: var(--white);
+  padding: 0.75rem 1.25rem; border-radius: var(--radius-sm);
+  font-size: 0.875rem; box-shadow: var(--shadow); z-index: 999;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s ease;
+  border-left: 3px solid var(--teal);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ── Hindi font adjustments ── */
+body.lang-hi h1, body.lang-hi h2 { letter-spacing: 0; }
+body.lang-hi .sp-body,
+body.lang-hi .app-desc,
+body.lang-hi .career-task { font-size: 0.95rem; line-height: 1.75; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  nav { padding: 0 1rem; }
+  .page-body { padding: 1rem; }
+}

@@ -1,0 +1,13 @@
+[project]
+name = "spark-backend"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+dependencies = [
+  "fastapi>=0.111.0",
+  "uvicorn[standard]>=0.29.0",
+  "supabase>=2.4.0",
+  "python-dotenv>=1.0.0",
+  "openpyxl>=3.1.0",
+  "pydantic>=2.7.0",
+]
