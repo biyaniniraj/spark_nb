@@ -20,3 +20,9 @@ frontend/dist/
 
 # OS
 .DS_Store
+
+# Audit/validation reports
+validations/
+
+# Local assets
+1000171465.jpg
