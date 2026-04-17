@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": ".claude/scripts/access-auditor-restrict-edits-to-validations.py",
+        "timeout": 5
+      }
+    ]
+  }
+}
