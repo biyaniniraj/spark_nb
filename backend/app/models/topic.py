@@ -9,6 +9,8 @@ class Topic(BaseModel):
     grade: str          # '9', '10', or 'All'
     sort_order: int
     is_active: bool
+    is_locked: bool = False
+    simply_put_title: Optional[str] = None
 
 class TopicContent(BaseModel):
     topic_id: str

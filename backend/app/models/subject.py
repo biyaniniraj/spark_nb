@@ -11,3 +11,4 @@ class Subject(BaseModel):
     is_free_preview: bool
     sort_order: int
     is_active: bool
+    is_locked: bool = False

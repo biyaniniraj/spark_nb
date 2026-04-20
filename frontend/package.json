@@ -8,10 +8,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.3.0",
+    "@supabase/supabase-js": "^2.43.0",
+    "chart.js": "^4.5.1",
     "pinia": "^2.1.0",
-    "@supabase/supabase-js": "^2.43.0"
+    "vue": "^3.4.0",
+    "vue-chartjs": "^5.3.3",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",

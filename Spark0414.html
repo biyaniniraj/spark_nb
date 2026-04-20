@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spark</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0F2044; --navy2:#162B44; --teal:#0EA5A0; --teal2:#14B8A6;
+  --teal-light:#E0F2FE; --amber:#F59E0B; --amber-light:#FEF3C7;
+  --white:#FFFFFF; --off:#F0F9F8; --gray:#64748B; --lgray:#E2E8F0;
+  --dktext:#1E293B; --muted:#94A3B8;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 4px 24px rgba(15,32,68,0.10);
+  --transition:0.22s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font-body);color:var(--dktext);background:var(--off);min-height:100vh}
+.hidden{display:none!important}
+.page{display:none;min-height:100vh;flex-direction:column}
+.page.active{display:flex}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;box-shadow:0 2px 12px rgba(0,0,0,0.18)}
+.nav-logo{font-family:var(--font-display);color:var(--white);font-size:1.35rem;cursor:pointer}
+.nav-logo span{color:var(--teal2)}
+.nav-links{display:flex;align-items:center;gap:1.5rem}
+.nav-links a{color:var(--muted);font-size:0.875rem;cursor:pointer;text-decoration:none;transition:color var(--transition)}
+.nav-links a:hover,.nav-links a.active{color:var(--teal2)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--teal);color:var(--white);font-size:0.8rem;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.breadcrumb{background:var(--white);border-bottom:1px solid var(--lgray);padding:0.6rem 2rem;font-size:0.8rem;color:var(--muted);display:flex;align-items:center;gap:0.4rem}
+.breadcrumb span{cursor:pointer}.breadcrumb span:hover{color:var(--teal)}
+.breadcrumb .sep{color:var(--lgray)}.breadcrumb .current{color:var(--dktext);font-weight:500}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.5rem;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem;font-weight:500;cursor:pointer;border:none;transition:all var(--transition)}
+.btn-primary{background:var(--teal);color:var(--white)}.btn-primary:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,160,0.35)}
+.btn-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}.btn-outline:hover{background:var(--teal-light)}
+.btn-amber{background:var(--amber);color:var(--navy)}.btn-amber:hover{background:#FBBF24;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--gray);border:1.5px solid var(--lgray)}.btn-ghost:hover{border-color:var(--teal);color:var(--teal)}
+.btn-lg{padding:0.9rem 2rem;font-size:1rem;border-radius:var(--radius)}
+.btn-sm{padding:0.45rem 1rem;font-size:0.8rem}
+
+/* FORMS */
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:0.82rem;font-weight:500;color:var(--gray);margin-bottom:0.4rem;letter-spacing:0.03em}
+.form-input{width:100%;padding:0.7rem 1rem;border:1.5px solid var(--lgray);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem;color:var(--dktext);background:var(--white);transition:border-color var(--transition);outline:none}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(14,165,160,0.12)}
+.form-input::placeholder{color:var(--muted)}
+.search-wrap{position:relative}.search-wrap input{padding-left:2.6rem}
+.search-wrap .search-icon{position:absolute;left:0.85rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:20px;font-size:0.75rem;font-weight:500}
+.badge-teal{background:var(--teal-light);color:#0369A1}
+.badge-amber{background:var(--amber-light);color:#92400E}
+.badge-navy{background:var(--navy);color:var(--teal2)}
+.badge-green{background:#D1FAE5;color:#065F46}
+
+/* ══════════ PAGE 1 — LANDING ══════════ */
+#page-landing{background:var(--navy);position:relative;overflow:hidden;justify-content:center;align-items:center;text-align:center;padding:2rem;min-height:100vh}
+.landing-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bg-circle{position:absolute;border-radius:50%;opacity:0.06;background:var(--teal2)}
+.bg-circle.c1{width:600px;height:600px;top:-200px;right:-150px}
+.bg-circle.c2{width:400px;height:400px;bottom:-100px;left:-100px}
+.bg-circle.c3{width:200px;height:200px;top:40%;left:10%}
+.landing-content{position:relative;z-index:1;max-width:640px}
+.landing-eyebrow{font-size:0.8rem;font-weight:500;color:var(--teal2);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:1.2rem}
+.landing-headline{font-family:var(--font-display);font-size:clamp(2.4rem,6vw,4rem);color:var(--white);line-height:1.15;margin-bottom:1.5rem}
+.landing-headline em{color:var(--amber);font-style:italic}
+.landing-sub{font-size:1.05rem;color:var(--muted);line-height:1.7;margin-bottom:2.5rem;max-width:480px;margin-left:auto;margin-right:auto}
+.landing-cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.landing-stats{display:flex;gap:2.5rem;justify-content:center;margin-top:3.5rem;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--font-display);font-size:2rem;color:var(--teal2);font-weight:700}
+.stat-label{font-size:0.75rem;color:var(--muted);margin-top:0.2rem}
+
+/* ══════════ PAGE 2 — AUTH ══════════ */
+#page-auth{background:var(--off);justify-content:center;align-items:center;padding:2rem;min-height:100vh}
+.auth-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--lgray);padding:2.5rem;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.auth-logo{font-family:var(--font-display);color:var(--navy);font-size:1.5rem;text-align:center;margin-bottom:0.3rem}
+.auth-logo span{color:var(--teal)}
+.auth-tagline{text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:1.8rem}
+.auth-tabs{display:flex;border-bottom:2px solid var(--lgray);margin-bottom:1.5rem}
+.auth-tab{flex:1;padding:0.6rem;text-align:center;font-size:0.875rem;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all var(--transition)}
+.auth-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+.social-btns{display:flex;flex-direction:column;gap:0.7rem;margin-bottom:1.2rem}
+.social-btn{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1rem;border:1.5px solid var(--lgray);border-radius:var(--radius-sm);font-size:0.875rem;font-weight:500;cursor:pointer;background:var(--white);color:var(--dktext);transition:all var(--transition)}
+.social-btn:hover{border-color:var(--teal);background:var(--teal-light)}
+.social-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;flex-shrink:0}
+.divider{display:flex;align-items:center;gap:0.8rem;margin:1rem 0;color:var(--muted);font-size:0.78rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--lgray)}
+.auth-footer{text-align:center;font-size:0.82rem;color:var(--muted);margin-top:1.2rem}
+.auth-footer a{color:var(--teal);cursor:pointer;font-weight:500}
+
+/* ══════════ PAGE 3 — ROLE ══════════ */
+#page-role{background:var(--navy);justify-content:center;align-items:center;padding:2rem;min-height:100vh}
+.role-wrap{max-width:700px;width:100%;text-align:center}
+.role-title{font-family:var(--font-display);color:var(--white);font-size:2.2rem;margin-bottom:0.6rem}
+.role-sub{color:var(--muted);font-size:0.95rem;margin-bottom:3rem}
+.role-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.role-card{background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:var(--radius);padding:2rem 1.2rem;cursor:pointer;transition:all var(--transition);position:relative;overflow:hidden}
+.role-card:hover{background:rgba(14,165,160,0.12);border-color:var(--teal);transform:translateY(-4px)}
+.role-card.coming-soon{cursor:default;opacity:0.5}
+.role-card.coming-soon:hover{transform:none;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1)}
+.coming-label{position:absolute;top:0.7rem;right:0.7rem;background:var(--amber);color:var(--navy);font-size:0.65rem;font-weight:700;padding:0.2rem 0.5rem;border-radius:20px;letter-spacing:0.05em}
+.role-icon{font-size:2.5rem;margin-bottom:1rem}
+.role-name{font-size:1.1rem;font-weight:600;color:var(--white);margin-bottom:0.4rem}
+.role-desc{font-size:0.8rem;color:var(--muted);line-height:1.5}
+
+/* ══════════ PAGE 4 — SUBJECTS ══════════ */
+#page-subjects{background:var(--off);flex-direction:column}
+.page-hero{background:var(--navy);padding:2.5rem 2rem 2rem}
+.page-hero-inner{max-width:960px;margin:0 auto}
+.page-hero h1{font-family:var(--font-display);color:var(--white);font-size:1.8rem;margin-bottom:0.4rem}
+.page-hero p{color:var(--muted);font-size:0.9rem}
+.page-body{flex:1;max-width:960px;margin:0 auto;width:100%;padding:2rem}
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:1rem}
+.subject-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:var(--radius);padding:1.5rem 1.2rem;cursor:pointer;transition:all var(--transition);text-align:center}
+.subject-card:hover{border-color:var(--teal);box-shadow:var(--shadow);transform:translateY(-3px)}
+.subj-icon{font-size:2rem;margin-bottom:0.6rem;display:block}
+.subj-name{font-size:0.95rem;font-weight:600;color:var(--dktext);margin-bottom:0.3rem}
+.subj-count{font-size:0.75rem;color:var(--muted)}
+
+/* ══════════ PAGE 5 — TOPICS ══════════ */
+#page-topics{background:var(--off);flex-direction:column}
+.topics-toolbar{background:var(--white);border-bottom:1px solid var(--lgray);padding:1rem 2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.topics-toolbar .search-wrap{flex:1;min-width:200px;max-width:340px}
+.grade-filter{display:flex;gap:0.4rem}
+.grade-btn{padding:0.45rem 1rem;border-radius:20px;border:1.5px solid var(--lgray);font-size:0.8rem;font-weight:500;cursor:pointer;background:var(--white);color:var(--gray);transition:all var(--transition)}
+.grade-btn.active{background:var(--navy);color:var(--white);border-color:var(--navy)}
+.sort-select{padding:0.45rem 0.8rem;border:1.5px solid var(--lgray);border-radius:var(--radius-sm);font-size:0.8rem;font-family:var(--font-body);color:var(--gray);background:var(--white);cursor:pointer}
+.topic-list{max-width:960px;margin:0 auto;width:100%;padding:1.5rem 2rem;display:flex;flex-direction:column;gap:0.75rem}
+.topic-row{background:var(--white);border:1.5px solid var(--lgray);border-radius:var(--radius);padding:1.1rem 1.5rem;cursor:pointer;transition:all var(--transition);display:flex;align-items:center;gap:1rem}
+.topic-row:hover{border-color:var(--teal);box-shadow:0 2px 12px rgba(14,165,160,0.1);transform:translateX(4px)}
+.topic-num{font-size:0.75rem;font-weight:700;color:var(--muted);min-width:28px}
+.topic-info{flex:1}
+.topic-name{font-size:0.95rem;font-weight:600;color:var(--dktext);margin-bottom:0.2rem}
+.topic-preview{font-size:0.8rem;color:var(--muted)}
+.topic-meta{display:flex;gap:0.5rem;align-items:center;flex-shrink:0}
+.topic-arrow{color:var(--muted);font-size:1rem;transition:transform var(--transition)}
+.topic-row:hover .topic-arrow{transform:translateX(4px);color:var(--teal)}
+
+/* ══════════ PAGE 6 — TOPIC DETAIL ══════════ */
+#page-detail{background:var(--off);flex-direction:column}
+.detail-hero{background:var(--navy);padding:2.5rem 2rem 2rem}
+.detail-hero-inner{max-width:960px;margin:0 auto}
+.detail-eyebrow{font-size:0.75rem;color:var(--teal2);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem}
+.detail-title{font-family:var(--font-display);color:var(--white);font-size:2rem;margin-bottom:0.8rem}
+.detail-meta{display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+.expert-badge{display:flex;align-items:center;gap:0.6rem;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-sm);padding:0.5rem 0.9rem;max-width:fit-content}
+.expert-avatar{width:32px;height:32px;border-radius:50%;background:var(--amber);color:var(--navy);font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.expert-info{font-size:0.78rem;line-height:1.4}
+.expert-info strong{color:var(--amber);font-size:0.82rem}
+.expert-info span{color:var(--muted)}
+.bookmark-btn{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;border-radius:var(--radius-sm);border:1.5px solid rgba(255,255,255,0.2);background:transparent;color:var(--muted);font-size:0.82rem;font-weight:500;cursor:pointer;transition:all var(--transition);margin-top:1rem}
+.bookmark-btn:hover,.bookmark-btn.saved{background:rgba(245,158,11,0.15);border-color:var(--amber);color:var(--amber)}
+
+.detail-body{max-width:960px;margin:0 auto;width:100%;padding:2rem;display:flex;flex-direction:column;gap:1.5rem}
+
+/* Simply Put section */
+.simply-put-card{background:linear-gradient(135deg,#0F2044 0%,#1a3a5c 100%);border-radius:var(--radius);padding:2rem;color:var(--white);position:relative;overflow:hidden}
+.simply-put-card::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(14,165,160,0.08);top:-80px;right:-80px;pointer-events:none}
+.sp-label{font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal2);margin-bottom:0.5rem}
+.sp-title{font-family:var(--font-display);font-size:1.4rem;color:var(--white);margin-bottom:1.2rem}
+.sp-body{font-size:1rem;line-height:1.85;color:#CBD5E1}
+.sp-character{display:inline-flex;align-items:center;gap:0.3rem;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);border-radius:20px;padding:0.15rem 0.6rem;font-size:0.82rem;color:var(--amber);font-weight:500}
+.sp-highlight{color:var(--teal2);font-weight:500}
+
+/* Real World Apps */
+.apps-section{background:var(--white);border-radius:var(--radius);border:1px solid var(--lgray);overflow:hidden}
+.section-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--lgray);display:flex;align-items:center;gap:0.75rem}
+.section-icon-wrap{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.section-title{font-size:1rem;font-weight:600;color:var(--dktext)}
+.section-sub{font-size:0.75rem;color:var(--muted)}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:1px;background:var(--lgray)}
+.app-card{background:var(--white);padding:1.5rem 1.2rem;display:flex;flex-direction:column;gap:0.8rem}
+.app-visual{width:100%;height:90px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0}
+.app-title{font-size:0.88rem;font-weight:600;color:var(--dktext);line-height:1.3}
+.app-desc{font-size:0.8rem;color:var(--gray);line-height:1.55}
+
+/* Careers section */
+.careers-section{background:var(--white);border-radius:var(--radius);border:1px solid var(--lgray);overflow:hidden}
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;padding:1.2rem 1.5rem}
+.career-card{border:1.5px solid var(--lgray);border-radius:var(--radius-sm);padding:1.1rem 1rem;cursor:pointer;transition:all var(--transition)}
+.career-card:hover{border-color:var(--teal);box-shadow:0 2px 12px rgba(14,165,160,0.12);transform:translateY(-2px)}
+.career-icon-wrap{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:0.7rem}
+.career-name{font-size:0.9rem;font-weight:600;color:var(--dktext);margin-bottom:0.25rem}
+.career-task{font-size:0.78rem;color:var(--muted);margin-bottom:0.7rem;line-height:1.4}
+.career-link{font-size:0.75rem;color:var(--teal);font-weight:500;display:flex;align-items:center;gap:0.3rem}
+
+/* ══════════ PAGE 7 — CAREER DETAIL ══════════ */
+#page-career{background:var(--off);flex-direction:column}
+.career-detail-hero{background:var(--navy);padding:2.5rem 2rem 2rem}
+.career-detail-inner{max-width:960px;margin:0 auto}
+.career-big-icon{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1rem}
+.career-detail-title{font-family:var(--font-display);color:var(--white);font-size:1.8rem;margin-bottom:0.4rem}
+.career-detail-sub{color:var(--muted);font-size:0.9rem;margin-bottom:1rem}
+.career-detail-body{max-width:960px;margin:0 auto;width:100%;padding:2rem;display:flex;flex-direction:column;gap:1.2rem}
+.cd-desc-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--lgray);padding:1.8rem}
+.cd-desc-label{font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:0.8rem}
+.cd-desc-text{font-size:1rem;line-height:1.85;color:var(--gray)}
+.cd-desc-text .highlight{color:var(--dktext);font-weight:500}
+.expert-video-card{background:var(--navy);border-radius:var(--radius);padding:1.8rem;display:flex;align-items:center;gap:1.5rem;cursor:pointer;transition:all var(--transition);border:1px solid rgba(14,165,160,0.2)}
+.expert-video-card:hover{border-color:var(--teal);background:#162B44}
+.video-thumb{width:80px;height:56px;border-radius:8px;background:rgba(14,165,160,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.8rem;position:relative}
+.play-btn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(14,165,160,0.25);border-radius:8px;font-size:1.5rem}
+.video-info{flex:1}
+.video-label{font-size:0.7rem;color:var(--teal2);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem}
+.video-title{font-size:1rem;font-weight:600;color:var(--white);margin-bottom:0.2rem}
+.video-desc{font-size:0.8rem;color:var(--muted)}
+.video-arrow{color:var(--teal2);font-size:1.3rem}
+.cd-skills{background:var(--white);border-radius:var(--radius);border:1px solid var(--lgray);padding:1.5rem}
+.skills-label{font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--gray);margin-bottom:0.9rem}
+.skills-list{display:flex;flex-wrap:wrap;gap:0.5rem}
+.skill-pill{padding:0.35rem 0.85rem;border-radius:20px;font-size:0.8rem;font-weight:500;background:var(--teal-light);color:#0369A1}
+
+/* ══════════ PAGE 8 — BOOKMARKS ══════════ */
+#page-bookmarks{background:var(--off);flex-direction:column}
+.bookmarks-body{max-width:960px;margin:0 auto;width:100%;padding:2rem}
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
+.empty-title{font-size:1.1rem;font-weight:600;color:var(--gray);margin-bottom:0.4rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:var(--white);padding:0.75rem 1.25rem;border-radius:var(--radius-sm);font-size:0.875rem;box-shadow:var(--shadow);z-index:999;transform:translateY(100px);opacity:0;transition:all 0.3s ease;border-left:3px solid var(--teal)}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* TRANSLATE BUTTON */
+.lang-btn{
+  position:fixed;bottom:1.5rem;left:1.5rem;z-index:998;
+  display:flex;align-items:center;gap:7px;
+  padding:0.5rem 1rem;border-radius:30px;border:none;cursor:pointer;
+  font-family:var(--font-body);font-size:0.8rem;font-weight:700;
+  background:var(--white);color:var(--navy);
+  box-shadow:0 4px 20px rgba(0,0,0,0.18);
+  transition:all 0.22s ease;
+  user-select:none;
+}
+.lang-btn:hover{background:var(--teal);color:var(--white);transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,165,160,0.3)}
+.lang-btn .lang-icon{font-size:1rem;line-height:1}
+.lang-btn .lang-label{letter-spacing:0.03em}
+/* dark page variant */
+body.lang-hi .lang-btn,.lang-btn.on-dark{background:rgba(255,255,255,0.12);color:var(--white);border:1px solid rgba(255,255,255,0.2)}
+body.lang-hi .lang-btn:hover,.lang-btn.on-dark:hover{background:var(--teal);border-color:var(--teal)}
+
+/* Hindi font boost — Devanagari renders better slightly larger */
+body.lang-hi .landing-headline,
+body.lang-hi .role-title,
+body.lang-hi h1,h2{letter-spacing:0}
+body.lang-hi .sp-body,
+body.lang-hi .detail-section-body,
+body.lang-hi .app-desc,
+body.lang-hi .career-task,
+body.lang-hi .cd-desc-text{font-size:0.95rem;line-height:1.75}
+
+@media(max-width:600px){
+  .role-cards{grid-template-columns:1fr}
+  nav{padding:0 1rem}
+  .page-body,.topic-list,.bookmarks-body,.detail-body,.career-detail-body{padding:1rem}
+  .apps-grid{grid-template-columns:1fr}
+  .career-grid{grid-template-columns:repeat(2,1fr)}
+  .cert-cta-banner{width:calc(100% - 2rem);margin:1rem}
+  .ccb-left{flex-wrap:wrap}
+  .teacher-quick,.certify-body,.mycerts-body{padding:1rem}
+}
+
+/* ══════════ TEACHER & CERTIFICATION PAGES ══════════ */
+#page-teacher,#page-quiz{background:var(--navy);flex-direction:column;min-height:100vh}
+#page-certify,#page-mycerts{background:var(--off);flex-direction:column}
+.teacher-hero{background:linear-gradient(135deg,#0F2044 0%,#1a3a5c 100%);padding:3rem 2rem 2.5rem;position:relative;overflow:hidden}
+.teacher-hero::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(14,165,160,0.08);top:-150px;right:-100px;pointer-events:none}
+.teacher-hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.teacher-tag{font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal2);margin-bottom:0.8rem}
+.teacher-name-h{font-family:var(--font-display);font-size:1.9rem;color:var(--white);margin-bottom:0.4rem}
+.teacher-school{font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem}
+.tstat-row{display:flex;gap:1rem;flex-wrap:wrap}
+.tstat{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.65rem 1.1rem;text-align:center}
+.tstat-num{font-size:1.3rem;font-weight:800;color:var(--teal2)}
+.tstat-lbl{font-size:0.65rem;color:var(--muted);margin-top:1px}
+.cert-cta-banner{background:linear-gradient(135deg,#1a0a2e,#2d1a5c);border:1px solid rgba(139,92,246,0.35);border-radius:var(--radius);padding:1.6rem 1.8rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:2rem auto;max-width:900px;width:calc(100% - 4rem)}
+.ccb-left{display:flex;align-items:center;gap:1.2rem}
+.ccb-medal{font-size:2.8rem;animation:medalFloat 3s ease-in-out infinite}
+@keyframes medalFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.ccb-q{font-size:0.7rem;color:#A78BFA;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem}
+.ccb-h{font-family:var(--font-display);font-size:1.3rem;color:var(--white);line-height:1.2;margin-bottom:0.35rem}
+.ccb-s{font-size:0.8rem;color:var(--muted);line-height:1.55;max-width:360px}
+.ccb-actions{display:flex;gap:0.7rem;flex-shrink:0;flex-wrap:wrap;align-items:center}
+.btn-purple{background:#7C3AED;color:var(--white);border:none}.btn-purple:hover{background:#6D28D9;transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,0.35)}
+.teacher-quick{max-width:900px;margin:0 auto;width:100%;padding:0 2rem 2rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:1rem}
+.tq-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:1.3rem;cursor:pointer;transition:all var(--transition)}
+.tq-card:hover{background:rgba(14,165,160,0.1);border-color:var(--teal)}
+.tqc-icon{font-size:1.6rem;margin-bottom:0.6rem}
+.tqc-title{font-size:0.88rem;font-weight:700;color:var(--white);margin-bottom:0.3rem}
+.tqc-desc{font-size:0.73rem;color:var(--muted);line-height:1.5}
+.tqc-tag{font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:0.45rem;background:rgba(14,165,160,0.2);color:var(--teal2)}
+.certify-hero{background:var(--navy);padding:2.5rem 2rem 2rem}
+.certify-hero-inner{max-width:900px;margin:0 auto}
+.certify-hero h1{font-family:var(--font-display);color:var(--white);font-size:1.8rem;margin-bottom:0.4rem}
+.certify-hero p{color:var(--muted);font-size:0.9rem}
+.certify-body{max-width:900px;margin:0 auto;width:100%;padding:2rem}
+.section-hlabel{font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.how-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:1rem;margin-bottom:2.5rem}
+.how-step{background:var(--white);border:1px solid var(--lgray);border-radius:var(--radius);padding:1.2rem 1rem;text-align:center}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--teal);color:var(--white);font-size:0.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem}
+.step-icon{font-size:1.5rem;margin-bottom:0.45rem}
+.step-title{font-size:0.82rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem}
+.step-desc{font-size:0.72rem;color:var(--muted);line-height:1.5}
+.cert-subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.cert-subj-card{background:var(--white);border:1.5px solid var(--lgray);border-radius:var(--radius);overflow:hidden;transition:all var(--transition)}
+.cert-subj-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--teal)}
+.csc-top{padding:1.1rem 1.1rem 0.7rem;display:flex;align-items:center;gap:0.8rem}
+.csc-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.csc-name{font-size:0.9rem;font-weight:700;color:var(--navy)}
+.csc-topics{font-size:0.72rem;color:var(--muted);margin-top:1px}
+.csc-prog{padding:0 1.1rem 0.9rem}
+.prog-track{background:var(--lgray);border-radius:10px;height:5px;margin-bottom:0.35rem;overflow:hidden}
+.prog-fill{height:100%;border-radius:10px;transition:width 0.6s ease}
+.prog-txt{font-size:0.68rem;color:var(--muted);display:flex;justify-content:space-between}
+.csc-foot{padding:0.75rem 1.1rem;border-top:1px solid var(--lgray);display:flex;align-items:center;justify-content:space-between}
+.csc-status{font-size:0.7rem;font-weight:700;display:flex;align-items:center;gap:3px}
+.csc-action{font-size:0.75rem;font-weight:700;color:var(--teal);cursor:pointer;background:none;border:none;padding:0;display:flex;align-items:center;gap:3px}
+.csc-action:hover{color:var(--teal2)}
+.mycerts-body{max-width:900px;margin:0 auto;width:100%;padding:2rem}
+.cert-badge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.2rem}
+.cert-badge{background:var(--white);border:1px solid var(--lgray);border-radius:var(--radius);padding:1.4rem 1.1rem;text-align:center;position:relative;overflow:hidden}
+.cb-ribbon{position:absolute;top:10px;right:-22px;background:var(--amber);color:var(--navy);font-size:0.56rem;font-weight:800;padding:3px 30px;transform:rotate(35deg);letter-spacing:0.05em}
+.cb-medal{font-size:2.8rem;margin-bottom:0.6rem;display:block}
+.cb-subj{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:0.35rem}
+.cb-title{font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.2rem}
+.cb-date{font-size:0.68rem;color:var(--muted)}
+.cb-score{display:inline-flex;align-items:center;gap:4px;background:var(--amber-light);border-radius:20px;padding:3px 9px;font-size:0.7rem;font-weight:700;color:#92400E;margin-top:0.5rem}
+.no-certs{text-align:center;padding:3rem;color:var(--muted)}
+.quiz-wrap{max-width:660px;margin:0 auto;width:100%;padding:2rem}
+.quiz-header{text-align:center;margin-bottom:2rem}
+.quiz-subj-tag{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal2);margin-bottom:0.5rem}
+.quiz-title{font-family:var(--font-display);font-size:1.5rem;color:var(--white);margin-bottom:1rem}
+.quiz-prog-row{display:flex;align-items:center;gap:1rem}
+.quiz-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.12);border-radius:3px;overflow:hidden}
+.quiz-prog-fill{height:100%;background:var(--teal);border-radius:3px;transition:width 0.4s ease}
+.quiz-count{font-size:0.75rem;color:var(--muted);white-space:nowrap}
+.quiz-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius);padding:1.6rem 1.5rem 1.2rem;margin:1.2rem 0}
+.quiz-q{font-size:1rem;font-weight:600;color:var(--white);line-height:1.6;margin-bottom:1.3rem}
+.quiz-opts{display:flex;flex-direction:column;gap:0.65rem}
+.quiz-opt{padding:0.8rem 1rem;border-radius:var(--radius-sm);border:1.5px solid rgba(255,255,255,0.14);background:transparent;color:rgba(255,255,255,0.82);font-size:0.87rem;font-family:var(--font-body);cursor:pointer;text-align:left;transition:all 0.15s;display:flex;align-items:center;gap:0.7rem}
+.quiz-opt:hover:not(:disabled){border-color:var(--teal);background:rgba(14,165,160,0.1);color:var(--white)}
+.quiz-opt.correct{border-color:var(--green);background:rgba(16,185,129,0.15);color:#6EE7B7}
+.quiz-opt.wrong{border-color:#FF6B6B;background:rgba(255,107,107,0.1);color:#FCA5A5}
+.quiz-opt:disabled{cursor:default}
+.opt-circle{width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
+.quiz-opt.correct .opt-circle{border-color:var(--green);background:rgba(16,185,129,0.25)}
+.quiz-opt.wrong .opt-circle{border-color:#FF6B6B;background:rgba(255,107,107,0.2)}
+.quiz-fb{font-size:0.8rem;color:#94A3B8;line-height:1.6;margin-top:0.75rem;padding:0.75rem 1rem;background:rgba(255,255,255,0.04);border-radius:var(--radius-sm);border-left:3px solid var(--teal)}
+.quiz-nav{display:flex;justify-content:flex-end;margin-top:0.75rem}
+.quiz-result{text-align:center;padding:1rem 0}
+.qr-medal{font-size:4rem;display:block;margin-bottom:0.8rem}
+.qr-title{font-family:var(--font-display);font-size:1.7rem;color:var(--white);margin-bottom:0.4rem}
+.qr-score-line{font-size:1rem;color:var(--muted);margin-bottom:1.5rem}
+.qr-score-line em{color:var(--amber);font-style:normal;font-weight:700}
+.qr-cert-box{background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.05));border:1.5px solid rgba(245,158,11,0.3);border-radius:var(--radius);padding:1.1rem 1.4rem;display:flex;align-items:center;gap:1rem;margin:1rem 0;text-align:left}
+.qr-cert-icon{font-size:2rem;flex-shrink:0}
+.qr-cert-title{color:var(--amber);font-size:0.88rem;font-weight:700;display:block;margin-bottom:3px}
+.qr-cert-sub{font-size:0.78rem;color:var(--muted)}
+.qr-actions{display:flex;gap:0.7rem;justify-content:center;flex-wrap:wrap;margin-top:1.2rem}
+
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<button class="lang-btn" id="lang-btn" onclick="toggleLang()" title="Switch language / भाषा बदलें">
+  <span class="lang-icon">🌐</span>
+  <span class="lang-label" id="lang-btn-label">हिंदी</span>
+</button>
+
+<!-- ═══════════════════════════════
+     PAGE 1 — LANDING
+═══════════════════════════════ -->
+<div class="page active" id="page-landing">
+  <div class="landing-bg">
+    <div class="bg-circle c1"></div>
+    <div class="bg-circle c2"></div>
+    <div class="bg-circle c3"></div>
+  </div>
+  <div class="landing-content">
+    <div class="landing-eyebrow" data-i18n="landing.eyebrow">India's curiosity platform for Class 9 & 10</div>
+    <h1 class="landing-headline">
+      <em data-i18n="landing.headline.em">Curious?</em><br>
+      <span data-i18n="landing.headline.rest.html">Only this can lead to<br>infinite possibilities.</span>
+    </h1>
+    <p class="landing-sub" data-i18n="landing.sub">Every chapter in your textbook connects to the real world — to careers, to inventions, to everyday life. Spark shows you exactly how.</p>
+    <div class="landing-cta-row">
+      <button class="btn btn-amber btn-lg" onclick="showPage('page-auth')" data-i18n="landing.cta1">Let's Explore →</button>
+      <button class="btn btn-outline btn-lg" onclick="showPage('page-auth')" data-i18n="landing.cta2">Sign In</button>
+    </div>
+    <div class="landing-stats">
+      <div class="stat-item"><div class="stat-num">10</div><div class="stat-label" data-i18n="stats.subjects">Subjects</div></div>
+      <div class="stat-item"><div class="stat-num">100+</div><div class="stat-label" data-i18n="stats.topics">Topics</div></div>
+      <div class="stat-item"><div class="stat-num">400+</div><div class="stat-label" data-i18n="stats.careers">Career connections</div></div>
+      <div class="stat-item"><div class="stat-num">CBSE</div><div class="stat-label" data-i18n="stats.board">Curriculum aligned</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 2 — AUTH
+═══════════════════════════════ -->
+<div class="page" id="page-auth">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:var(--off)">
+  <div class="auth-card">
+    <div class="auth-logo">Sp<span>ark</span></div>
+    <div class="auth-tagline" data-i18n="auth.tagline">Ignite your curiosity. Find your path.</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchTab('login')" data-i18n="auth.signin">Sign In</div>
+      <div class="auth-tab" onclick="switchTab('register')" data-i18n="auth.register">Register</div>
+    </div>
+    <div id="auth-login">
+      <div class="social-btns">
+        <button class="social-btn" onclick="doSocialLogin()">
+          <div class="social-icon" style="background:#EA4335;color:white">G</div><span data-i18n="auth.google">Continue with Google</span>
+        </button>
+        <button class="social-btn" onclick="doSocialLogin()">
+          <div class="social-icon" style="background:#1877F2;color:white">f</div><span data-i18n="auth.facebook">Continue with Facebook</span>
+        </button>
+        <button class="social-btn" onclick="doSocialLogin()">
+          <div class="social-icon" style="background:#000;color:white">𝕏</div><span data-i18n="auth.twitter">Continue with X (Twitter)</span>
+        </button>
+      </div>
+      <div class="divider" data-i18n="auth.divider">or sign in with email</div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.email">Email address</label><input class="form-input" type="email" placeholder="you@example.com"></div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.password">Password</label><input class="form-input" type="password" placeholder="••••••••"></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:1.2rem"><a style="font-size:0.8rem;color:var(--teal);cursor:pointer" data-i18n="auth.forgot">Forgot password?</a></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showPage('page-role')" data-i18n="auth.signin">Sign In</button>
+      <div class="auth-footer" data-i18n="auth.newuser.html">New here? <a onclick="switchTab('register')">Create an account</a></div>
+    </div>
+    <div id="auth-register" class="hidden">
+      <div class="social-btns">
+        <button class="social-btn" onclick="doSocialLogin()"><div class="social-icon" style="background:#EA4335;color:white">G</div><span data-i18n="auth.google.reg">Register with Google</span></button>
+        <button class="social-btn" onclick="doSocialLogin()"><div class="social-icon" style="background:#1877F2;color:white">f</div><span data-i18n="auth.facebook.reg">Register with Facebook</span></button>
+      </div>
+      <div class="divider" data-i18n="auth.divider.reg">or register with email</div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.fullname">Full name</label><input class="form-input" type="text" placeholder="Your name"></div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.email">Email address</label><input class="form-input" type="email" placeholder="you@example.com"></div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.school">School / Institution (optional)</label><input class="form-input" type="text" placeholder="Delhi Public School, RK Puram"></div>
+      <div class="form-group"><label class="form-label" data-i18n="auth.password">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:0.5rem" onclick="showPage('page-role')" data-i18n="auth.create">Create Account</button>
+      <div class="auth-footer" data-i18n="auth.haveaccount.html">Already registered? <a onclick="switchTab('login')">Sign in</a></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 3 — ROLE
+═══════════════════════════════ -->
+<div class="page" id="page-role">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;background:var(--navy);padding:2rem">
+  <div class="role-wrap">
+    <div style="font-size:0.8rem;color:var(--teal2);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.8rem" data-i18n="role.welcome">Welcome back!</div>
+    <h2 class="role-title" data-i18n="role.title">Who are you today?</h2>
+    <p class="role-sub" data-i18n="role.sub">Choose your role — your experience is tailored just for you</p>
+    <div class="role-cards">
+      <div class="role-card" onclick="showPage('page-subjects')">
+        <div class="role-icon">🎒</div>
+        <div class="role-name" data-i18n="role.student">Student</div>
+        <div class="role-desc" data-i18n="role.student.desc">Explore subjects, discover real-world connections, find your path</div>
+      </div>
+      <div class="role-card" onclick="showPage('page-teacher')">
+        <div class="role-icon">👩‍🏫</div>
+        <div class="role-name" data-i18n="role.teacher">Teacher</div>
+        <div class="role-desc" data-i18n="role.teacher.desc">Access lesson starter kits, classroom activities and topic guides</div>
+      </div>
+      <div class="role-card coming-soon">
+        <div class="coming-label" data-i18n="role.soon">SOON</div>
+        <div class="role-icon">👨‍👩‍👧</div>
+        <div class="role-name" data-i18n="role.parent">Parent</div>
+        <div class="role-desc" data-i18n="role.parent.desc">Stay informed, spark conversations, support learning at home</div>
+      </div>
+    </div>
+    <div style="margin-top:2rem">
+      <button class="btn btn-ghost" onclick="showPage('page-landing')" style="color:var(--muted);border-color:rgba(255,255,255,0.15)" data-i18n="role.back">← Back to home</button>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 4 — SUBJECTS
+═══════════════════════════════ -->
+<div class="page" id="page-subjects">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a class="active">Subjects</a>
+      <a onclick="showPage('page-bookmarks')">My Bookmarks</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">A</div></div>
+  </nav>
+  <div class="page-hero"><div class="page-hero-inner">
+    <h1 data-i18n="subjects.title">Choose a subject</h1>
+    <p data-i18n="subjects.sub">Pick any subject to explore topics, real-world applications and career connections</p>
+  </div></div>
+  <div class="page-body"><div class="subject-grid" id="subject-grid"></div></div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 5 — TOPICS
+═══════════════════════════════ -->
+<div class="page" id="page-topics">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-subjects')">Subjects</a>
+      <a id="nav-subject-name" class="active">Mathematics</a>
+      <a onclick="showPage('page-bookmarks')">My Bookmarks</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">A</div></div>
+  </nav>
+  <div class="breadcrumb">
+    <span onclick="showPage('page-subjects')">Subjects</span>
+    <span class="sep">›</span>
+    <span class="current" id="bc-subject">Mathematics</span>
+  </div>
+  <div class="topics-toolbar">
+    <div class="search-wrap" style="flex:1;min-width:200px;max-width:360px">
+      <span class="search-icon">🔍</span>
+      <input class="form-input" type="text" placeholder="Search topics…" id="topic-search" oninput="filterTopics()">
+    </div>
+    <div class="grade-filter">
+      <button class="grade-btn active" onclick="setGrade(this,'all')">All Grades</button>
+      <button class="grade-btn" onclick="setGrade(this,'9')">Class 9</button>
+      <button class="grade-btn" onclick="setGrade(this,'10')">Class 10</button>
+    </div>
+    <select class="sort-select" id="sort-select" onchange="filterTopics()">
+      <option value="default">Sort: Default</option>
+      <option value="az">A → Z</option>
+      <option value="za">Z → A</option>
+    </select>
+  </div>
+  <div class="topic-list" id="topic-list"></div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 6 — TOPIC DETAIL
+═══════════════════════════════ -->
+<div class="page" id="page-detail">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-subjects')">Subjects</a>
+      <a onclick="showPage('page-topics')" id="nav-det-subject">Mathematics</a>
+      <a onclick="showPage('page-bookmarks')">My Bookmarks</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">A</div></div>
+  </nav>
+  <div class="breadcrumb">
+    <span onclick="showPage('page-subjects')">Subjects</span>
+    <span class="sep">›</span>
+    <span onclick="showPage('page-topics')" id="bc-det-subject">Mathematics</span>
+    <span class="sep">›</span>
+    <span class="current" id="bc-det-topic">Linear Equations</span>
+  </div>
+  <div class="detail-hero">
+    <div class="detail-hero-inner">
+      <div class="detail-eyebrow" id="det-eyebrow">Mathematics · Class 9 & 10</div>
+      <h1 class="detail-title" id="det-title">Linear Equations</h1>
+      <div class="detail-meta">
+        <span class="badge badge-teal" id="det-grade-badge">Class 9 & 10</span>
+        <span class="badge badge-navy" id="det-subject-badge">Mathematics</span>
+      </div>
+      <div class="expert-badge" id="expert-badge">
+        <div class="expert-avatar" id="expert-initials">RS</div>
+        <div class="expert-info">
+          <strong id="expert-name">Dr. Rahul Sharma</strong><br>
+          <span id="expert-role">Chief Economist, Reserve Bank of India</span>
+        </div>
+        <span style="margin-left:0.5rem;font-size:0.75rem;color:var(--amber)" id="expert-verified">✓ Verified</span>
+      </div>
+      <button class="bookmark-btn" id="bookmark-btn" onclick="toggleBookmark()">
+        <span id="bm-icon">🔖</span> <span id="bm-label">Save to Bookmarks</span>
+      </button>
+    </div>
+  </div>
+  <div class="detail-body">
+    <!-- A: Simply Put -->
+    <div class="simply-put-card">
+      <div class="sp-label" data-i18n="detail.simply" id="sp-label">Simply Put</div>
+      <div class="sp-title" id="sp-title">What is this really about?</div>
+      <div class="sp-body" id="sp-body"></div>
+    </div>
+    <!-- B: Real-World Applications -->
+    <div class="apps-section">
+      <div class="section-header">
+        <div class="section-icon-wrap" style="background:#D1FAE5">🌍</div>
+        <div>
+          <div class="section-title" data-i18n="detail.apps.title" id="apps-section-title">Real-world applications</div>
+          <div class="section-sub" data-i18n="detail.apps.sub" id="apps-section-sub">Where this topic shows up outside the classroom</div>
+        </div>
+      </div>
+      <div class="apps-grid" id="det-apps-grid"></div>
+    </div>
+    <!-- C: Careers -->
+    <div class="careers-section">
+      <div class="section-header">
+        <div class="section-icon-wrap" style="background:#FEF3C7">💼</div>
+        <div>
+          <div class="section-title" data-i18n="detail.careers.title" id="careers-section-title">Careers that use this</div>
+          <div class="section-sub" data-i18n="detail.careers.sub" id="careers-section-sub">Tap any career to learn more and hear from an expert</div>
+        </div>
+      </div>
+      <div class="career-grid" id="det-career-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 7 — CAREER DETAIL
+═══════════════════════════════ -->
+<div class="page" id="page-career">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-subjects')">Subjects</a>
+      <a onclick="showPage('page-topics')" id="nav-car-subject">Mathematics</a>
+      <a onclick="showPage('page-detail')" id="nav-car-topic">Linear Equations</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">A</div></div>
+  </nav>
+  <div class="breadcrumb">
+    <span onclick="showPage('page-subjects')">Subjects</span>
+    <span class="sep">›</span>
+    <span onclick="showPage('page-topics')" id="bc-car-subject">Mathematics</span>
+    <span class="sep">›</span>
+    <span onclick="showPage('page-detail')" id="bc-car-topic">Linear Equations</span>
+    <span class="sep">›</span>
+    <span class="current" id="bc-car-career">Economist</span>
+  </div>
+  <div class="career-detail-hero">
+    <div class="career-detail-inner">
+      <div class="career-big-icon" id="car-big-icon" style="background:rgba(14,165,160,0.2)">💼</div>
+      <h1 class="career-detail-title" id="car-title">Economist</h1>
+      <div class="career-detail-sub" id="car-sub">Uses linear equations to model real-world economic relationships</div>
+      <div style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap" id="car-badges"></div>
+    </div>
+  </div>
+  <div class="career-detail-body">
+    <div class="cd-desc-card">
+      <div class="cd-desc-label" id="car-desc-label">What does this person actually do?</div>
+      <div class="cd-desc-text" id="car-desc"></div>
+    </div>
+    <div class="expert-video-card" id="video-card" onclick="openVideo()">
+      <div class="video-thumb">
+        <div class="play-btn">▶</div>
+      </div>
+      <div class="video-info">
+        <div class="video-label" id="video-label">Hear it from an expert</div>
+        <div class="video-title" id="video-title">Dr. Ananya Bose — Senior Economist, NITI Aayog</div>
+        <div class="video-desc" id="video-quote">"Let me show you exactly how I used equations at work this week…"</div>
+      </div>
+      <div class="video-arrow">›</div>
+    </div>
+    <div class="cd-skills">
+      <div class="skills-label" data-i18n="career.skills" id="car-skills-label">Key skills this career needs</div>
+      <div class="skills-list" id="car-skills"></div>
+    </div>
+    <div style="padding-bottom:1rem">
+      <button class="btn btn-ghost" id="car-back-btn" onclick="showPage('page-detail')">← Back to topic</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 8 — BOOKMARKS
+═══════════════════════════════ -->
+<div class="page" id="page-bookmarks">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-subjects')">Subjects</a>
+      <a class="active">My Bookmarks</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">A</div></div>
+  </nav>
+  <div class="page-hero"><div class="page-hero-inner">
+    <h1 data-i18n="bookmarks.title">My Bookmarks</h1>
+    <p data-i18n="bookmarks.sub">Topics you've saved to revisit later</p>
+  </div></div>
+  <div class="bookmarks-body">
+    <div id="bookmark-list"></div>
+    <div class="empty-state hidden" id="bookmark-empty">
+      <div class="empty-icon">🔖</div>
+      <div class="empty-title" data-i18n="bookmarks.empty.title">No bookmarks yet</div>
+      <p style="font-size:0.85rem;margin-top:0.4rem;margin-bottom:1.5rem" data-i18n="bookmarks.empty.sub">Save topics as you explore — they'll appear here</p>
+      <button class="btn btn-primary" onclick="showPage('page-subjects')" data-i18n="bookmarks.explore">Explore subjects →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════
+     PAGE 9 — TEACHER HOME
+═══════════════════════════════ -->
+<div class="page" id="page-teacher">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-certify')">Certifications</a>
+      <a onclick="showPage('page-mycerts')">My Certificates</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">T</div></div>
+  </nav>
+  <div class="teacher-hero">
+    <div class="teacher-hero-inner">
+      <div class="teacher-tag">Teacher Dashboard</div>
+      <div class="teacher-name-h">Welcome, Priya Sharma</div>
+      <div class="teacher-school">Mathematics Teacher · Delhi Public School, R.K. Puram</div>
+      <div class="tstat-row">
+        <div class="tstat"><div class="tstat-num">3</div><div class="tstat-lbl">Subjects teaching</div></div>
+        <div class="tstat"><div class="tstat-num" id="teacher-cert-count">0</div><div class="tstat-lbl">Spark certifications</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERTIFICATION CTA BANNER -->
+  <div class="cert-cta-banner">
+    <div class="ccb-left">
+      <div class="ccb-medal">🏅</div>
+      <div>
+        <div class="ccb-q">Spark Certification Programme</div>
+        <div class="ccb-h">Are you Spark Certified yet?</div>
+        <div class="ccb-s">Explore all content for a subject, then take a quick test. Your certificate signals to students and school management that you deeply understand the real-world relevance of what you teach.</div>
+      </div>
+    </div>
+    <div class="ccb-actions">
+      <button class="btn btn-purple btn-lg" onclick="showPage('page-certify')">Explore →</button>
+      <button class="btn btn-ghost" onclick="showPage('page-mycerts')" style="border-color:rgba(255,255,255,0.2);color:var(--muted)">My certificates</button>
+    </div>
+  </div>
+
+  <!-- QUICK ACCESS GRID -->
+  <div class="teacher-quick">
+    <div class="tq-card" onclick="showPage('page-certify')">
+      <div class="tqc-icon">🎓</div>
+      <div class="tqc-title">Get Certified</div>
+      <div class="tqc-desc">Explore content for any subject and take the certification test</div>
+      <div class="tqc-tag">10 subjects available</div>
+    </div>
+    <div class="tq-card" onclick="showPage('page-mycerts')">
+      <div class="tqc-icon">📜</div>
+      <div class="tqc-title">My Certificates</div>
+      <div class="tqc-desc">View and share your earned Spark certifications</div>
+      <div class="tqc-tag">Shareable badges</div>
+    </div>
+    <div class="tq-card">
+      <div class="tqc-icon">📋</div>
+      <div class="tqc-title">Lesson Starter Kits</div>
+      <div class="tqc-desc">5-minute hooks for every topic — zero prep required</div>
+      <div class="tqc-tag">Coming soon</div>
+    </div>
+    <div class="tq-card">
+      <div class="tqc-icon">🧪</div>
+      <div class="tqc-title">Classroom Activities</div>
+      <div class="tqc-desc">Hands-on application tasks for each topic</div>
+      <div class="tqc-tag">Coming soon</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 10 — CERTIFICATION HUB
+═══════════════════════════════ -->
+<div class="page" id="page-certify">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-teacher')">Dashboard</a>
+      <a class="active">Certifications</a>
+      <a onclick="showPage('page-mycerts')">My Certificates</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">T</div></div>
+  </nav>
+  <div class="certify-hero">
+    <div class="certify-hero-inner">
+      <h1>Spark Certification Programme</h1>
+      <p>Become a Spark Certified Teacher — recognised by students, parents, and school management</p>
+    </div>
+  </div>
+  <div class="certify-body">
+    <div class="section-hlabel" style="margin-bottom:0.8rem">How it works</div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-num">1</div>
+        <div class="step-icon">📖</div>
+        <div class="step-title">Explore the content</div>
+        <div class="step-desc">Go through all topics for your subject — Simply Put, applications, and career links</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">2</div>
+        <div class="step-icon">🧠</div>
+        <div class="step-title">Take the test</div>
+        <div class="step-desc">Answer 10 application-based questions. Pass with 70% or above to earn your certificate</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">3</div>
+        <div class="step-icon">🏅</div>
+        <div class="step-title">Earn your badge</div>
+        <div class="step-desc">Your digital certificate is issued and shareable. Retake anytime to improve your score</div>
+      </div>
+      <div class="how-step">
+        <div class="step-num">4</div>
+        <div class="step-icon">⭐</div>
+        <div class="step-title">Stand out</div>
+        <div class="step-desc">Your Spark badge appears on your profile — visible to students and school management</div>
+      </div>
+    </div>
+    <div class="section-hlabel">Choose a subject to get certified</div>
+    <div class="cert-subject-grid" id="cert-subject-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 11 — MY CERTIFICATES
+═══════════════════════════════ -->
+<div class="page" id="page-mycerts">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-teacher')">Dashboard</a>
+      <a onclick="showPage('page-certify')">Certifications</a>
+      <a class="active">My Certificates</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">T</div></div>
+  </nav>
+  <div class="page-hero"><div class="page-hero-inner">
+    <h1>My Certificates</h1>
+    <p>Your earned Spark certifications — shareable and school-verified</p>
+  </div></div>
+  <div class="mycerts-body">
+    <div id="mycerts-content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     PAGE 12 — CERTIFICATION QUIZ
+═══════════════════════════════ -->
+<div class="page" id="page-quiz">
+  <nav>
+    <div class="nav-logo" onclick="showPage('page-landing')">Sp<span>ark</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('page-certify')">← Back to certifications</a>
+    </div>
+    <div class="nav-right"><div class="nav-avatar">T</div></div>
+  </nav>
+  <div class="quiz-wrap" id="quiz-container"></div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const subjects = [
+  {id:'maths',  name:'Mathematics',   nameHi:'गणित',             icon:'📐', grade:'9 & 10', gradeHi:'9 और 10', color:'#0EA5A0', topicCount:18},
+  {id:'physics',name:'Physics',       nameHi:'भौतिकी',            icon:'⚛️',  grade:'9 & 10', gradeHi:'9 और 10', color:'#7C3AED', topicCount:16},
+  {id:'chem',   name:'Chemistry',     nameHi:'रसायन विज्ञान',     icon:'🧪', grade:'9 & 10', gradeHi:'9 और 10', color:'#DC2626', topicCount:14},
+  {id:'bio',    name:'Biology',       nameHi:'जीव विज्ञान',       icon:'🌿', grade:'9 & 10', gradeHi:'9 और 10', color:'#059669', topicCount:15},
+  {id:'hist',   name:'History',       nameHi:'इतिहास',            icon:'🏛️',  grade:'9 & 10', gradeHi:'9 और 10', color:'#D97706', topicCount:12},
+  {id:'geo',    name:'Geography',     nameHi:'भूगोल',             icon:'🗺️',  grade:'9 & 10', gradeHi:'9 और 10', color:'#0284C7', topicCount:12},
+  {id:'civics', name:'Civics',        nameHi:'नागरिक शास्त्र',    icon:'⚖️', grade:'9 & 10', gradeHi:'9 और 10', color:'#DB2777', topicCount:10},
+  {id:'cs',     name:'Computer Sc.',  nameHi:'कंप्यूटर विज्ञान',  icon:'💻', grade:'9 & 10', gradeHi:'9 और 10', color:'#4F46E5', topicCount:14},
+  {id:'eng',    name:'English',       nameHi:'अंग्रेज़ी',          icon:'📖', grade:'9 & 10', gradeHi:'9 और 10', color:'#0EA5A0', topicCount:10},
+  {id:'hindi',  name:'Hindi',         nameHi:'हिंदी',             icon:'🪔', grade:'9 & 10', gradeHi:'9 और 10', color:'#D97706', topicCount:10},
+];
+
+const topicsData = {
+  maths: [
+    {
+      id:'lin-eq', name:'Linear Equations', nameHi:'रैखिक समीकरण', grade:'9',
+      expert:{name:'Dr. Ananya Bose', role:'Senior Economist, NITI Aayog', initials:'AB'},
+      simplyPut:{
+        title:'Think of it as a perfect balance',
+        titleHi:'इसे एक सही संतुलन की तरह सोचें',
+        body:`Imagine <span class="sp-character">Riya</span> has ₹500 and wants to buy chocolates costing ₹20 each. How many can she buy? That's a linear equation — <span class="sp-highlight">one unknown, one answer</span>. The word "linear" just means the unknown (like the number of chocolates) never gets squared or cubed — it stays simple and straight. Every time you say <em>"if A then B"</em> in daily life, you're already thinking linearly. Maths just gives you a precise tool to find the exact answer, every single time.`,
+        bodyHi:`मान लीजिए <span class="sp-character">रिया</span> के पास ₹500 हैं और वह ₹20 वाली चॉकलेट खरीदना चाहती है। वह कितनी खरीद सकती है? यही एक रैखिक समीकरण है — <span class="sp-highlight">एक अज्ञात, एक उत्तर</span>। "रैखिक" शब्द का मतलब है कि अज्ञात (जैसे चॉकलेट की संख्या) कभी वर्ग या घन नहीं होता — यह सरल और सीधा रहता है। जब भी आप दैनिक जीवन में कहते हैं <em>"अगर A तो B"</em>, आप पहले से ही रैखिक सोच रहे हैं। गणित बस आपको हर बार सटीक उत्तर खोजने का एक सटीक उपकरण देता है।`
+      },
+      apps:[
+        {icon:'🛒', bg:'#E0F2FE', title:'Budget planning', titleHi:'बजट योजना', desc:'Calculating exactly how many items you can buy within a fixed budget — the same maths supermarkets use for pricing promotions.', descHi:'एक निश्चित बजट में ठीक कितनी वस्तुएं खरीदी जा सकती हैं — यही गणित सुपरमार्केट मूल्य प्रचार के लिए उपयोग करते हैं।'},
+        {icon:'🚗', bg:'#D1FAE5', title:'Travel & time', titleHi:'यात्रा और समय', desc:'If a train travels at 80 km/h, how long to reach a city 320 km away? Every navigation app solves this equation millions of times a day.', descHi:'अगर एक ट्रेन 80 km/h की गति से चलती है, तो 320 km दूर शहर पहुँचने में कितना समय लगेगा? हर नेविगेशन ऐप रोज़ लाखों बार यह समीकरण हल करता है।'},
+        {icon:'🏭', bg:'#FEF3C7', title:'Break-even analysis', titleHi:'लागत-लाभ विश्लेषण', desc:'Businesses use linear equations to find the exact number of units they must sell to cover their costs — the moment profit begins.', descHi:'व्यवसाय रैखिक समीकरणों का उपयोग उत्पादों की वह सटीक संख्या खोजने के लिए करते हैं जो उन्हें लागत पूरी करने के लिए बेचनी है।'},
+        {icon:'💊', bg:'#FCE7F3', title:'Medicine dosage', titleHi:'दवा की खुराक', desc:'Nurses calculate the right drug dosage based on patient weight using a simple linear relationship — too little fails, too much harms.', descHi:'नर्सें मरीज़ के वज़न के आधार पर सही दवा की खुराक एक सरल रैखिक संबंध का उपयोग करके निकालती हैं।'},
+      ],
+      careers:[
+        {id:'economist', icon:'📊', bg:'#E0F2FE', name:'Economist', nameHi:'अर्थशास्त्री',
+          task:'Models supply & demand relationships', taskHi:'आपूर्ति और मांग के संबंधों का मॉडल बनाता है',
+          skills:['Data analysis','Policy thinking','Statistical modelling','Communication'],
+          desc:`An <span class="highlight">Economist</span> studies how people, companies, and governments make decisions about money and resources. Imagine <span class="highlight">Priya</span>, an economist at NITI Aayog — every morning she opens datasets of prices, employment, and spending. She builds equations that say: <em>"if interest rates rise by 1%, borrowing falls by this much."</em> Linear equations are her first tool. She uses them to predict the impact of a new government policy before it's even announced — helping leaders make smarter decisions for millions of people.`,
+          descHi:`एक <span class="highlight">अर्थशास्त्री</span> यह अध्ययन करता है कि लोग, कंपनियाँ और सरकारें धन और संसाधनों के बारे में कैसे निर्णय लेती हैं। <span class="highlight">प्रिया</span> को देखिए, जो NITI Aayog में अर्थशास्त्री हैं — हर सुबह वह कीमतों, रोज़गार और खर्च के डेटासेट खोलती हैं। वह ऐसे समीकरण बनाती हैं जो कहते हैं: <em>"अगर ब्याज दरें 1% बढ़ती हैं, तो उधारी इतनी कम हो जाती है।"</em> रैखिक समीकरण उनका पहला उपकरण है — जो करोड़ों लोगों के लिए स्मार्ट निर्णय लेने में मदद करता है।`,
+          videoExpert:'Dr. Ananya Bose', videoRole:'Senior Economist, NITI Aayog', videoQuote:'"Let me show you how I used linear modelling in a real policy brief last week…"'},
+        {id:'logmgr', icon:'🚛', bg:'#D1FAE5', name:'Logistics Manager', nameHi:'लॉजिस्टिक्स प्रबंधक',
+          task:'Optimises delivery routes & costs', taskHi:'डिलीवरी मार्ग और लागत का अनुकूलन करता है',
+          skills:['Route optimisation','Cost analysis','Inventory planning','Supply chain'],
+          desc:`A <span class="highlight">Logistics Manager</span> ensures the right goods reach the right place at the right time. Think of <span class="highlight">Aryan</span>, who manages deliveries for a large e-commerce company. He writes equations like: <em>"total delivery cost = fixed cost + (cost per km × distance)"</em> — a perfect linear equation. By solving thousands of these every day, his team finds the cheapest routes, decides how many trucks to dispatch, and plans which warehouse to ship from. Without this maths, your next-day delivery would cost ten times more.`,
+          descHi:`एक <span class="highlight">लॉजिस्टिक्स प्रबंधक</span> सुनिश्चित करता है कि सही सामान सही जगह समय पर पहुँचे। <span class="highlight">आर्यन</span> को देखिए जो एक बड़ी ई-कॉमर्स कंपनी के लिए डिलीवरी प्रबंधित करते हैं। वह ऐसे समीकरण लिखते हैं: <em>"कुल डिलीवरी लागत = निश्चित लागत + (प्रति km लागत × दूरी)"</em> — एक सटीक रैखिक समीकरण। इसके बिना आपकी अगले दिन की डिलीवरी दस गुना महंगी होती।`,
+          videoExpert:'Aryan Kapoor', videoRole:'Head of Logistics, Flipkart', videoQuote:'"I use equations every morning before the first truck leaves the warehouse…"'},
+        {id:'accountant', icon:'💼', bg:'#FEF3C7', name:'Accountant', nameHi:'लेखाकार',
+          task:'Balances financial statements', taskHi:'वित्तीय विवरण संतुलित करता है',
+          skills:['Financial reporting','Tax computation','Audit','Excel & data'],
+          desc:`An <span class="highlight">Accountant</span> is a professional keeper of financial truth. Every balance sheet is a linear equation: <em>Assets = Liabilities + Equity</em>. Meet <span class="highlight">Meena</span>, a chartered accountant at a mid-sized textile firm in Surat. She uses linear equations to model the company's cash flow — predicting when money will run short, when to pay suppliers, and how much tax is owed.`,
+          descHi:`एक <span class="highlight">लेखाकार</span> वित्तीय सच्चाई का पेशेवर रक्षक होता है। हर बैलेंस शीट एक रैखिक समीकरण है: <em>संपत्ति = देनदारियाँ + इक्विटी</em>। <span class="highlight">मीना</span> से मिलिए, सूरत की एक कपड़ा कंपनी में चार्टर्ड अकाउंटेंट। वह रैखिक समीकरणों से कंपनी के नकदी प्रवाह का मॉडल बनाती हैं — यह भविष्यवाणी करते हुए कि पैसा कब कम पड़ेगा।`,
+          videoExpert:'CA Meena Joshi', videoRole:'Partner, Deloitte India', videoQuote:'"I\'ll show you a real P&L and the equations that sit behind every single line…"'},
+        {id:'nurse', icon:'🏥', bg:'#FCE7F3', name:'Clinical Nurse', nameHi:'नैदानिक नर्स',
+          task:'Calculates precise drug dosages', taskHi:'सटीक दवा खुराक की गणना करती है',
+          skills:['Patient care','Pharmacology','Critical thinking','Communication'],
+          desc:`A <span class="highlight">Clinical Nurse</span> is often the last line of safety before a patient receives medication. Consider <span class="highlight">Rajan</span>, a nurse in a paediatric ward in Chennai. Before giving a child any medicine, he must calculate: <em>dose (mg) = weight (kg) × prescribed dose per kg</em>. That's a linear equation — and getting it wrong by even 10% can be dangerous.`,
+          descHi:`एक <span class="highlight">नैदानिक नर्स</span> अक्सर मरीज़ को दवा देने से पहले सुरक्षा की अंतिम कड़ी होती है। चेन्नई के बाल वार्ड में <span class="highlight">राजन</span> को देखिए। किसी बच्चे को दवा देने से पहले वह गणना करते हैं: <em>खुराक (mg) = वज़न (kg) × प्रति kg निर्धारित खुराक</em>। यह एक रैखिक समीकरण है — और 10% की गलती भी खतरनाक हो सकती है।`,
+          videoExpert:'Rajan Pillai RN', videoRole:'Senior Nurse, Apollo Hospitals', videoQuote:'"I\'ll walk you through a real dosage calculation from my shift last night…"'},
+      ]
+    },
+    {
+      id:'trig', name:'Trigonometry', grade:'10',
+      expert:{name:'Dr. Priya Nair', role:'Navigation Systems Lead, ISRO', initials:'PN'},
+      simplyPut:{
+        title:'Measuring what you cannot reach',
+        body:`Imagine <span class="sp-character">Aman</span> stands on the ground and wants to know how tall the school building is — without climbing it. He just needs to know the <span class="sp-highlight">angle he has to look up</span> and how far he's standing from the building. That's trigonometry. It's the branch of maths that connects <em>angles</em> to <em>lengths</em>. The word sounds scary but the idea is simple: if you know one angle and one side of a right triangle, you can find everything else. Sailors, pilots, architects, and even your phone's GPS use this idea millions of times every second.`
+      },
+      apps:[
+        {icon:'🏗️', bg:'#E0F2FE', title:'Construction & bridges', desc:'Civil engineers calculate exact forces and angles in bridges, roofs, and towers — a slightly wrong angle in a support beam can cause collapse.'},
+        {icon:'✈️', bg:'#D1FAE5', title:'Aviation & navigation', desc:'Pilots use trigonometry to calculate their exact position, altitude, and descent angle — every landing is a trig problem solved in real time.'},
+        {icon:'📡', bg:'#FEF3C7', title:'Satellite dish design', desc:'The parabolic shape of a dish antenna is designed using trigonometric curves to focus all signals to a single point — your DTH TV depends on this.'},
+        {icon:'🌍', bg:'#FCE7F3', title:'Earthquake location', desc:'Seismologists use angles from three different recording stations to triangulate the exact epicentre of an earthquake within minutes.'},
+      ],
+      careers:[
+        {id:'civil-eng', icon:'🏗️', bg:'#E0F2FE', name:'Civil Engineer', task:'Designs safe structures using angles & loads', skills:['Structural analysis','AutoCAD','Site management','Material science'], desc:`A <span class="highlight">Civil Engineer</span> designs the physical world — roads, bridges, dams, buildings. Meet <span class="highlight">Suresh</span>, an engineer working on a flyover in Hyderabad. Before a single brick is laid, he uses trigonometry to calculate the exact angle of each steel support, how much load each member carries, and where tension or compression might cause failure. If his trig is even slightly off, the structure could be unsafe. Every blueprint Suresh draws is a page of trigonometric calculations turned into something millions of people will drive across without a second thought.`, videoExpert:'Er. Suresh Varma', videoRole:'Project Director, L&T Infrastructure', videoQuote:'"Let me show you the actual calculation I made for a bridge I designed last year…"'},
+        {id:'pilot', icon:'✈️', bg:'#D1FAE5', name:'Pilot', task:'Uses angles to navigate and land safely', skills:['Spatial awareness','Decision-making','Meteorology','Instrument reading'], desc:`A <span class="highlight">Pilot</span> is a professional problem-solver at 35,000 feet. Think of <span class="highlight">Captain Divya</span>, flying from Mumbai to Delhi at night. She constantly uses trigonometric ratios — to calculate her descent angle so the aircraft touches down smoothly, to adjust for crosswinds that push the plane sideways, and to judge distance to the runway using glide slope indicators. Trigonometry isn't abstract in a cockpit — it is the difference between a smooth landing and an emergency. Every pilot learns it, uses it, and trusts their life to it.`, videoExpert:'Capt. Divya Sharma', videoRole:'Senior First Officer, IndiGo', videoQuote:'"I\'ll walk you through a real approach and landing — the maths you see on my instruments…"'},
+      ]
+    },
+    {
+      id:'stats', name:'Statistics & Probability', grade:'9',
+      expert:{name:'Ms. Sunita Rao', role:'Head of Analytics, Swiggy', initials:'SR'},
+      simplyPut:{
+        title:'Making sense of a messy, uncertain world',
+        body:`<span class="sp-character">Isha</span> surveys 50 students about their favourite subject. Can she use that to guess what 1,000 students might say? Yes — and that's statistics. It's the art of <span class="sp-highlight">finding patterns in data</span> and making confident guesses about the unknown. Probability takes it further: if you flip a coin 100 times, you won't get exactly 50 heads — but you'll get <em>close</em> to 50. Statistics explains why, and by how much. In the age of AI, data science, and elections, this is the most powerful thinking tool you can own.`
+      },
+      apps:[
+        {icon:'🏏', bg:'#E0F2FE', title:'Cricket analytics', desc:'Every IPL team uses batting averages, strike rates, and win probabilities — all built on statistics — to pick players and set field placements.'},
+        {icon:'🌦️', bg:'#D1FAE5', title:'Weather forecasting', desc:'The "70% chance of rain" on your phone is a probability calculation run on thousands of historical weather data points.'},
+        {icon:'💊', bg:'#FEF3C7', title:'Drug trials', desc:'Before any medicine is approved, statisticians analyse trial data to prove it actually works — and that its benefits outweigh risks.'},
+        {icon:'📱', bg:'#FCE7F3', title:'Recommendations', desc:'Netflix, YouTube, and Spotify use statistical models to predict what you\'ll watch or listen to next — based on patterns in millions of users.'},
+      ],
+      careers:[
+        {id:'data-sci', icon:'📊', bg:'#E0F2FE', name:'Data Scientist', task:'Finds patterns and predictions in large data', skills:['Python/R programming','Machine learning','Data visualisation','Statistical modelling'], desc:`A <span class="highlight">Data Scientist</span> is a detective whose clues are numbers. Imagine <span class="highlight">Neha</span>, a data scientist at a food delivery company. When the app predicts your order will arrive in 28 minutes, that's Neha's statistical models at work — trained on millions of past deliveries, accounting for traffic, restaurant speed, and distance. She also tells the business: <em>"if we offer a 10% discount on Tuesdays, orders increase by 22%."</em> That insight comes from statistics. Neha's work directly shapes what millions of users see on the app, every single day.`, videoExpert:'Ms. Sunita Rao', videoRole:'Head of Analytics, Swiggy', videoQuote:'"I\'ll show you the exact model that predicts your delivery time — and the stats behind it…"'},
+      ]
+    },
+    {id:'quad-eq', name:'Quadratic Equations', nameHi:'द्विघात समीकरण',     grade:'10', expert:{name:'Prof. Ramesh Iyer',role:'IIT Bombay, Dept. of Mathematics',initials:'RI'}, simplyPut:{title:'When one answer is not enough',body:`<span class="sp-character">Aryan</span> kicks a football into the air. It goes up, reaches a peak, then comes back down. At what point is it exactly 5 metres high? There are <span class="sp-highlight">two moments</span> — once going up, once coming down. A quadratic equation finds both answers at once. The word "quadratic" comes from the Latin for square (quadratus) — these equations always involve an unknown multiplied by itself (x²). Any time something goes up and comes back down — a ball, a profit curve, a rocket — a quadratic equation describes the whole journey.`}, apps:[{icon:'🚀',bg:'#E0F2FE',title:'Rocket trajectories',desc:'Every missile and space launch follows a parabolic path described by quadratic equations — precision here is the difference between orbit and crash.'},{icon:'📡',bg:'#D1FAE5',title:'Satellite dish curves',desc:'The parabolic shape of a satellite dish is a real-world quadratic curve, focusing all incoming signals to a single point.'},{icon:'💰',bg:'#FEF3C7',title:'Maximising profit',desc:'Companies model revenue vs price using quadratics to find the exact price that maximises profit — neither too high nor too low.'},{icon:'🏗️',bg:'#FCE7F3',title:'Arch design',desc:'Architects design bridges and archways using parabolic curves — mathematically the strongest shape for carrying distributed weight.'}], careers:[{id:'aerospace',icon:'🚀',bg:'#E0F2FE',name:'Aerospace Engineer',task:'Models projectile and orbital paths',skills:['Fluid dynamics','Structural analysis','CAD software','Physics & maths'],desc:`An <span class="highlight">Aerospace Engineer</span> designs machines that defy gravity. Meet <span class="highlight">Kavya</span>, an engineer at ISRO working on a satellite launch vehicle. Every stage of the rocket's journey is a quadratic (or higher) equation — the burn time, the trajectory arc, the point of stage separation. When Kavya models the rocket's path, she's solving systems of equations to ensure the payload reaches exactly the right orbit. One miscalculation and a ₹500-crore satellite misses its orbit permanently. Her work makes India's name known in space.`, videoExpert:'Dr. Kavya Maran', videoRole:'Propulsion Engineer, ISRO', videoQuote:'"I\'ll trace the maths that put our last satellite into orbit — equation by equation…"'}]},
+    {id:'poly', name:'Polynomials', nameHi:'बहुपद',             grade:'9',  expert:{name:'Dr. Kavitha Subramanian',role:'R&D Lead, Tata Motors',initials:'KS'}, simplyPut:{title:'The building blocks of complex curves',body:`Think of a polynomial like a <span class="sp-highlight">recipe for any curve</span>. A straight line is the simplest — one ingredient. Add an x² term and you get a curve. Add x³ and it bends more dramatically. <span class="sp-character">Maya</span> notices her phone bill isn't the same every month — it goes up and down based on data used, calls made, and add-ons. If she tried to draw that as a graph, it would be a wavy curve — a polynomial describes it exactly. The more terms you add, the more complex the curve — and mathematicians can describe almost any shape in the world this way.`}, apps:[{icon:'🚗',bg:'#E0F2FE',title:'Car body design',desc:'Engineers use polynomial curves called Bézier curves to model the smooth, aerodynamic shapes of car bodies in CAD software.'},{icon:'🔤',bg:'#D1FAE5',title:'Fonts & logos',desc:'Every letter on your screen is drawn using polynomial (Bézier) curves — the same curves you studied, rendered millions of times per second.'},{icon:'🎵',bg:'#FEF3C7',title:'Audio signal processing',desc:'Music apps filter noise and enhance audio using polynomial approximations applied to thousands of data points per second.'},{icon:'📈',bg:'#FCE7F3',title:'Economic modelling',desc:'Economists fit polynomial curves to historical data to model how consumer spending changes with income — invaluable for budget planning.'}], careers:[{id:'graphic-des',icon:'🎨',bg:'#E0F2FE',name:'Graphic Designer',task:'Uses Bézier curves to create smooth designs',skills:['Adobe Illustrator','Typography','Colour theory','Visual composition'],desc:`A <span class="highlight">Graphic Designer</span> turns ideas into beautiful visuals. Every tool in Adobe Illustrator's pen tool is built on Bézier polynomial curves. When <span class="highlight">Siddharth</span>, a designer in Bengaluru, draws the curves of a logo or the flow of a typeface, he's manipulating polynomial anchor points without even realising it. The maths runs silently underneath. He crafts brand identities for companies — the logo on packaging you see in a supermarket, the typeface on a billboard. His creative work is powered, invisibly, by the polynomial equations you learn in Class 9.`, videoExpert:'Siddharth Rao', videoRole:'Senior Designer, Ogilvy India', videoQuote:'"I\'ll open my actual design file and show you the Bézier curves — and their maths…"'}]},
+    {id:'circles', name:'Circles', nameHi:'वृत्त',                grade:'10', expert:{name:'Dr. Vikram Nanda',role:'Principal Engineer, Bosch India',initials:'VN'}, simplyPut:{title:'The most perfect shape in nature',body:`A circle is every point that is <span class="sp-highlight">exactly the same distance</span> from one central point. That's it. This simple rule creates a shape so perfect that nature uses it everywhere — from ripples in water to the orbits of planets. <span class="sp-character">Karan</span> wonders why wheels are circular and not square. Because a circle has the same radius all the way around — so a wheel rolls smoothly without bumping. The properties of circles — tangents, chords, arcs, sectors — let engineers design gears, architects design domes, and scientists model planetary orbits.`}, apps:[{icon:'⚙️',bg:'#E0F2FE',title:'Gears & machinery',desc:'Every gear in an engine, clock, or bicycle uses circle geometry — the ratio of gear radii determines how speed and torque are transferred.'},{icon:'🔭',bg:'#D1FAE5',title:'Planetary orbits',desc:'Planets follow near-circular orbits. Astronomers calculate orbital periods, distances, and eclipse timings using circle and ellipse geometry.'},{icon:'🏛️',bg:'#FEF3C7',title:'Domes & arches',desc:'The Pantheon in Rome and modern sports stadiums use circular dome geometry — distributing weight evenly so no single point bears too much load.'},{icon:'📡',bg:'#FCE7F3',title:'Radar systems',desc:'Radar detects objects by emitting circular waves and measuring how they bounce back — the detection range is literally a circle around the antenna.'}], careers:[{id:'mech-eng',icon:'⚙️',bg:'#E0F2FE',name:'Mechanical Engineer',task:'Designs circular mechanical components',skills:['CAD (SolidWorks)','Thermodynamics','Material science','Manufacturing'],desc:`A <span class="highlight">Mechanical Engineer</span> designs things that move. Almost everything that rotates — engines, fans, turbines, wheels — is built on the geometry of circles. <span class="highlight">Ankit</span>, an engineer at a Pune auto-parts factory, designs gear sets for motorcycles. He uses circle theorems to calculate the exact tooth spacing on a gear, the pitch circle diameter, and how two gears will mesh. Get the geometry wrong by even 0.1mm and the gear cracks under load. Ankit's knowledge of circles — learned in Class 10 — is directly embedded in every bike that rolls off that production line.`, videoExpert:'Er. Ankit Desai', videoRole:'Design Engineer, Bajaj Auto', videoQuote:'"I\'ll show you a real gear drawing and point out every circle theorem I used…"'}]},
+    {id:'ap', name:'Arithmetic Progressions', nameHi:'समांतर श्रेढ़ी', grade:'10', expert:{name:'Ms. Deepa Krishnan',role:'CFP, HDFC Securities',initials:'DK'}, simplyPut:{title:'Patterns that grow by the same amount every step',body:`If your pocket money is ₹500 in January, ₹550 in February, ₹600 in March — always going up by ₹50 — that's an <span class="sp-highlight">Arithmetic Progression</span>. The beauty is: you don't have to calculate month by month. There's a formula that jumps straight to "what will it be in month 24?" <span class="sp-character">Priya</span> saves ₹200 more every month. By the end of a year, she wants to know her total savings. One formula, one answer. APs are everywhere — from the rows in a cinema hall to EMI payments to how fast a car slows down while braking.`}, apps:[{icon:'🏦',bg:'#E0F2FE',title:'EMI & savings planning',desc:'Your home loan EMI, recurring deposits, and monthly savings plans all follow an arithmetic progression — one formula reveals the full picture.'},{icon:'🎪',bg:'#D1FAE5',title:'Event seating design',desc:'Stadium and theatre designers use APs to plan seat counts per row, ensuring every tier has a consistent pattern and correct total capacity.'},{icon:'🚘',bg:'#FEF3C7',title:'Vehicle deceleration',desc:'When a car brakes uniformly, its speed decreases by the same amount each second — an AP that helps engineers calculate safe stopping distances.'},{icon:'📅',bg:'#FCE7F3',title:'Salary increments',desc:'Most salary structures are arithmetic — a fixed annual raise applied each year. HR teams use AP formulas to plan decades of payroll in minutes.'}], careers:[{id:'fin-plan',icon:'💰',bg:'#E0F2FE',name:'Financial Planner',task:'Models savings, investments & loan repayments',skills:['Investment analysis','Tax planning','Risk assessment','Client communication'],desc:`A <span class="highlight">Financial Planner</span> turns your financial hopes into a mathematical roadmap. When <span class="highlight">Deepa</span> sits with a client who wants to retire comfortably at 55, she builds a savings plan using arithmetic progressions — mapping out how monthly contributions will grow each year to reach a target corpus. She calculates loan repayments, advises on SIPs, and models different "what if" scenarios. All of it starts with the same AP formulas from Class 10. Her clients are doctors, teachers, and shopkeepers — people who trust her maths to secure their future.`, videoExpert:'Ms. Deepa Krishnan', videoRole:'Certified Financial Planner, HDFC Securities', videoQuote:'"I\'ll build a real retirement plan live — and show you the AP that sits behind every row…"'}]},
+    {id:'surface', name:'Surface Area & Volume', nameHi:'पृष्ठीय क्षेत्रफल और आयतन',   grade:'9',  expert:{name:'Er. Sanjay Patel',role:'Project Director, L&T Construction',initials:'SP'}, simplyPut:{title:'How much does it hold? How much wraps it?',body:`<span class="sp-character">Rohan</span> wants to gift-wrap a box for his friend. How much wrapping paper does he need? That's surface area — the <span class="sp-highlight">total area of all the faces</span> of a 3D object. Now imagine the box is a water tank — how much water does it hold? That's volume — the space inside. These two ideas are everywhere in the physical world. Every bottle on a supermarket shelf, every room in a building, every pill in a blister pack — someone calculated the surface area and volume to design it efficiently, safely, and cheaply.`}, apps:[{icon:'📦',bg:'#E0F2FE',title:'Packaging design',desc:'Brands calculate the minimum material needed to enclose a product — reducing cardboard by 5% across millions of boxes saves crores every year.'},{icon:'🏗️',bg:'#D1FAE5',title:'Construction materials',desc:'Civil engineers calculate exactly how much concrete, steel, or paint is needed for a structure — over-ordering wastes money, under-ordering halts work.'},{icon:'💊',bg:'#FEF3C7',title:'Pharmaceutical dosing',desc:'Capsule shells are designed with a precise volume to hold exactly the right amount of medicine — surface area determines how quickly the drug dissolves.'},{icon:'🌊',bg:'#FCE7F3',title:'Reservoir capacity',desc:'Engineers calculate the volume of dams and reservoirs to plan water supply for cities — a miscalculation can mean drought or catastrophic overflow.'}], careers:[{id:'civil-en2',icon:'🏗️',bg:'#E0F2FE',name:'Civil Engineer',task:'Estimates material requirements for structures',skills:['Structural design','Cost estimation','Project management','AutoCAD'],desc:`A <span class="highlight">Civil Engineer</span> literally shapes the world we live in. Every road you drive on, every building you enter, every dam you see from a distance — someone calculated its surface area and volume first. Meet <span class="highlight">Nandini</span>, a site engineer on a highway project in Maharashtra. Before construction begins, she estimates: how much concrete for the pillars (volume), how much formwork material to mould them (surface area), and how much paint for the final finish. Her calculations feed directly into the project budget. A 2% error on a ₹200-crore project means ₹4 crore wasted. Precision here is everything.`, videoExpert:'Er. Nandini Joshi', videoRole:'Site Engineer, NHAI Project', videoQuote:'"I\'ll walk you through an actual material estimation sheet from a live project…"'}]},
+    {id:'triangles', name:'Triangles & Similarity', nameHi:'त्रिभुज और समरूपता',  grade:'9',  expert:{name:'Ar. Meera Pillai',role:'Principal Architect, HCP Design',initials:'MP'}, simplyPut:{title:'The strongest shape — and the art of scaling it',body:`Why are so many structures triangular? Because a triangle is the <span class="sp-highlight">only shape that cannot be deformed</span> without changing the length of its sides. Push on a square and it collapses into a parallelogram. A triangle holds firm. <span class="sp-character">Anisha</span> notices that a photo of the Taj Mahal and the actual Taj Mahal have exactly the same proportions — all angles identical, just different sizes. That's similar triangles — same shape, different scale. This is how architects draw scale plans, how maps represent the world, and how animators resize characters without distortion.`}, apps:[{icon:'🗺️',bg:'#E0F2FE',title:'Maps & scale drawings',desc:'Every map uses similar triangles to represent the world at a smaller scale — a 1cm line on a map might mean 10km in reality.'},{icon:'🌉',bg:'#D1FAE5',title:'Bridge trusses',desc:'The triangular truss is the fundamental structure of every bridge and roof — engineers use triangle geometry to distribute load perfectly.'},{icon:'📐',bg:'#FEF3C7',title:'Land surveying',desc:'Surveyors measure inaccessible distances using similar triangle ratios — no GPS needed, just two angles and a known baseline.'},{icon:'🎬',bg:'#FCE7F3',title:'3D animation',desc:'When animators scale a character, they use proportional (similar) transformations to keep every feature perfectly proportioned at any size.'}], careers:[{id:'architect',icon:'🏛️',bg:'#E0F2FE',name:'Architect',task:'Designs buildings using scale and proportion',skills:['AutoCAD / Revit','Structural awareness','Spatial thinking','Client communication'],desc:`An <span class="highlight">Architect</span> turns human needs into built reality. Every floor plan you see — whether for a home, hospital, or airport — is a scale drawing built on similar triangles. When <span class="highlight">Meera</span>, an architect in Bengaluru, designs a school building, she creates scale drawings where 1cm represents 1 metre. She uses triangle geometry to calculate roof slopes, check sight lines, and ensure every space is proportional. Her drawings are legal documents — contractors build exactly from them. The school where students will learn for decades starts as Meera's triangles on a sheet of paper.`, videoExpert:'Ar. Meera Pillai', videoRole:'Principal Architect, HCP Design', videoQuote:'"I\'ll show you a real architectural drawing and the triangle geometry that runs through every line…"'}]},
+  ]
+};
+
+// ═══════════ LANGUAGE / TRANSLATION ═══════════
+const state = {
+  currentSubject:'maths', currentTopic:null, currentCareer:null,
+  gradeFilter:'all', isBookmarked:false, lang:'en',
+  bookmarks: JSON.parse(localStorage.getItem('spark_bm')||'[]')
+};
+
+const T = {
+  en: {
+    'lang.btn':'हिंदी',
+    'landing.eyebrow':"India's curiosity platform for Class 9 & 10",
+    'landing.headline.em':'Curious?',
+    'landing.headline.rest.html':'Only this can lead to<br>infinite possibilities.',
+    'landing.sub':'Every chapter in your textbook connects to the real world — to careers, to inventions, to everyday life. Spark shows you exactly how.',
+    'landing.cta1':'Let\'s Explore →','landing.cta2':'Sign In',
+    'stats.subjects':'Subjects','stats.topics':'Topics','stats.careers':'Career connections','stats.board':'Curriculum aligned',
+    'auth.tagline':'Ignite your curiosity. Find your path.',
+    'auth.signin':'Sign In','auth.register':'Register',
+    'auth.google':'Continue with Google','auth.facebook':'Continue with Facebook','auth.twitter':'Continue with X (Twitter)',
+    'auth.google.reg':'Register with Google','auth.facebook.reg':'Register with Facebook',
+    'auth.divider':'or sign in with email','auth.divider.reg':'or register with email',
+    'auth.email':'Email address','auth.password':'Password','auth.forgot':'Forgot password?',
+    'auth.fullname':'Full name','auth.school':'School / Institution (optional)',
+    'auth.create':'Create Account',
+    'auth.newuser.html':'New here? <a onclick="switchTab(\'register\')">Create an account</a>',
+    'auth.haveaccount.html':'Already registered? <a onclick="switchTab(\'login\')">Sign in</a>',
+    'role.welcome':'Welcome back!','role.title':'Who are you today?',
+    'role.sub':'Choose your role — your experience is tailored just for you',
+    'role.student':'Student','role.student.desc':'Explore subjects, discover real-world connections, find your path',
+    'role.teacher':'Teacher','role.teacher.desc':'Access lesson starter kits, classroom activities and topic guides',
+    'role.parent':'Parent','role.parent.desc':'Stay informed, spark conversations, support learning at home',
+    'role.soon':'SOON','role.back':'← Back to home',
+    'nav.subjects':'Subjects','nav.bookmarks':'My Bookmarks',
+    'subjects.title':'Choose a subject',
+    'subjects.sub':'Pick any subject to explore topics, real-world applications and career connections',
+    'topics.search':'Search topics…','topics.allgrades':'All Grades','topics.class9':'Class 9','topics.class10':'Class 10',
+    'topics.sort.default':'Sort: Default','topics.sort.az':'A → Z','topics.sort.za':'Z → A',
+    'detail.simply':'Simply Put',
+    'detail.apps.title':'Real-world applications','detail.apps.sub':'Where this topic shows up outside the classroom',
+    'detail.careers.title':'Careers that use this','detail.careers.sub':'Tap any career to learn more and hear from an expert',
+    'detail.verified':'✓ Verified','detail.bookmark':'Save to Bookmarks','detail.bookmarked':'Bookmarked',
+    'detail.career.link':'Learn more & hear from expert ›',
+    'career.skills':'Key skills this career needs',
+    'career.desc.label':"What does this person actually do?",
+    'career.video.label':'Hear it from an expert',
+    'career.back':'← Back to topic',
+    'bookmarks.title':'My Bookmarks','bookmarks.sub':"Topics you've saved to revisit later",
+    'bookmarks.empty.title':'No bookmarks yet',
+    'bookmarks.empty.sub':"Save topics as you explore — they'll appear here",
+    'bookmarks.explore':'Explore subjects →',
+  },
+  hi: {
+    'lang.btn':'English',
+    'landing.eyebrow':'भारत का जिज्ञासा मंच · कक्षा 9 और 10',
+    'landing.headline.em':'जिज्ञासु?',
+    'landing.headline.rest.html':'यही एकमात्र रास्ता है<br>अनंत संभावनाओं की ओर।',
+    'landing.sub':'आपकी किताब का हर अध्याय असली दुनिया से जुड़ा है — करियर, आविष्कार और रोज़मर्रा की ज़िंदगी से। Spark आपको बताता है कैसे।',
+    'landing.cta1':'आइए खोजें →','landing.cta2':'साइन इन',
+    'stats.subjects':'विषय','stats.topics':'विषय-वस्तु','stats.careers':'करियर संबंध','stats.board':'पाठ्यक्रम अनुरूप',
+    'auth.tagline':'अपनी जिज्ञासा जगाएं। अपना रास्ता खोजें।',
+    'auth.signin':'साइन इन','auth.register':'पंजीकरण',
+    'auth.google':'Google से जारी रखें','auth.facebook':'Facebook से जारी रखें','auth.twitter':'X (Twitter) से जारी रखें',
+    'auth.google.reg':'Google से पंजीकरण करें','auth.facebook.reg':'Facebook से पंजीकरण करें',
+    'auth.divider':'या ईमेल से साइन इन करें','auth.divider.reg':'या ईमेल से पंजीकरण करें',
+    'auth.email':'ईमेल पता','auth.password':'पासवर्ड','auth.forgot':'पासवर्ड भूल गए?',
+    'auth.fullname':'पूरा नाम','auth.school':'विद्यालय / संस्था (वैकल्पिक)',
+    'auth.create':'खाता बनाएं',
+    'auth.newuser.html':'नए हैं? <a onclick="switchTab(\'register\')">खाता बनाएं</a>',
+    'auth.haveaccount.html':'पहले से पंजीकृत? <a onclick="switchTab(\'login\')">साइन इन करें</a>',
+    'role.welcome':'वापसी पर स्वागत है!','role.title':'आज आप कौन हैं?',
+    'role.sub':'अपनी भूमिका चुनें — आपका अनुभव आपके लिए अनुकूलित है',
+    'role.student':'छात्र','role.student.desc':'विषय खोजें, असली दुनिया से जुड़ाव खोजें, अपना रास्ता ढूंढें',
+    'role.teacher':'शिक्षक','role.teacher.desc':'पाठ स्टार्टर किट, कक्षा गतिविधियाँ और विषय मार्गदर्शिकाएँ',
+    'role.parent':'अभिभावक','role.parent.desc':'सूचित रहें, बातचीत शुरू करें, घर पर सीखने में सहायता करें',
+    'role.soon':'जल्द आएगा','role.back':'← होम पर वापस',
+    'nav.subjects':'विषय','nav.bookmarks':'मेरे बुकमार्क',
+    'subjects.title':'एक विषय चुनें',
+    'subjects.sub':'कोई भी विषय चुनें — विषय-वस्तु, असली दुनिया के उपयोग और करियर देखें',
+    'topics.search':'विषय खोजें…','topics.allgrades':'सभी कक्षाएं','topics.class9':'कक्षा 9','topics.class10':'कक्षा 10',
+    'topics.sort.default':'क्रम: डिफ़ॉल्ट','topics.sort.az':'अ → ज','topics.sort.za':'ज → अ',
+    'detail.simply':'सरल शब्दों में',
+    'detail.apps.title':'असली दुनिया में उपयोग','detail.apps.sub':'यह विषय कक्षा के बाहर कहाँ दिखता है',
+    'detail.careers.title':'इससे जुड़े करियर','detail.careers.sub':'किसी भी करियर पर टैप करें — अधिक जानें और विशेषज्ञ से सुनें',
+    'detail.verified':'✓ सत्यापित','detail.bookmark':'बुकमार्क में सहेजें','detail.bookmarked':'बुकमार्क किया',
+    'detail.career.link':'अधिक जानें और विशेषज्ञ से सुनें ›',
+    'career.skills':'इस करियर के लिए ज़रूरी कौशल',
+    'career.desc.label':'यह व्यक्ति असल में क्या करता है?',
+    'career.video.label':'विशेषज्ञ से सुनें',
+    'career.back':'← विषय पर वापस',
+    'bookmarks.title':'मेरे बुकमार्क','bookmarks.sub':'बाद में देखने के लिए सहेजे गए विषय',
+    'bookmarks.empty.title':'अभी कोई बुकमार्क नहीं',
+    'bookmarks.empty.sub':'खोजते समय विषय सहेजें — वे यहाँ दिखेंगे',
+    'bookmarks.explore':'विषय खोजें →',
+  }
+};
+
+function t(key){ return (T[state.lang]||T.en)[key] || (T.en[key]) || key; }
+
+function applyTranslations(){
+  const lang = state.lang;
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if(key.endsWith('.html')) el.innerHTML = val;
+    else el.textContent = val;
+  });
+  // Update nav links dynamically (they're in multiple navs)
+  document.querySelectorAll('.nav-links a[onclick*="page-subjects"]').forEach(el=>el.textContent=t('nav.subjects'));
+  document.querySelectorAll('.nav-links a[onclick*="page-bookmarks"]').forEach(el=>el.textContent=t('nav.bookmarks'));
+  // Update lang button label
+  const lbl = document.getElementById('lang-btn-label');
+  if(lbl) lbl.textContent = t('lang.btn');
+  // Style button for dark pages
+  const darkPages = ['page-landing','page-role'];
+  const btn = document.getElementById('lang-btn');
+  const activePage = document.querySelector('.page.active');
+  if(btn && activePage){
+    btn.classList.toggle('on-dark', darkPages.includes(activePage.id));
+  }
+  // Update body class for Hindi font adjustments
+  document.body.classList.toggle('lang-hi', lang==='hi');
+  // Update search placeholder
+  const srch = document.getElementById('topic-search');
+  if(srch) srch.placeholder = t('topics.search');
+  // Update grade buttons
+  document.querySelectorAll('.grade-btn').forEach(b=>{
+    const txt = b.textContent.trim();
+    if(txt==='All Grades'||txt==='सभी कक्षाएं') b.textContent=t('topics.allgrades');
+    else if(txt==='Class 9'||txt==='कक्षा 9') b.textContent=t('topics.class9');
+    else if(txt==='Class 10'||txt==='कक्षा 10') b.textContent=t('topics.class10');
+  });
+  // Update sort select
+  const sel = document.getElementById('sort-select');
+  if(sel){
+    sel.options[0].text=t('topics.sort.default');
+    sel.options[1].text=t('topics.sort.az');
+    sel.options[2].text=t('topics.sort.za');
+  }
+  // Re-render dynamic sections if visible
+  const pid = activePage?.id;
+  if(pid==='page-subjects') renderSubjects();
+  if(pid==='page-topics') renderTopics();
+  if(pid==='page-detail' && state.currentTopic) openTopic(state.currentTopic, true);
+  if(pid==='page-career' && state.currentCareer) openCareer(state.currentCareer, true);
+  if(pid==='page-bookmarks') renderBookmarks();
+  // Update bookmark button if showing
+  if(state.currentTopic) updateBookmarkBtn();
+}
+
+function toggleLang(){
+  state.lang = state.lang==='en' ? 'hi' : 'en';
+  localStorage.setItem('spark_lang', state.lang);
+  applyTranslations();
+}
+
+// ═══════════ SUBJECTS ═══════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='page-subjects') renderSubjects();
+  if(id==='page-bookmarks') renderBookmarks();
+  // Update lang button dark/light style per page
+  const darkPages=['page-landing','page-role'];
+  const btn=document.getElementById('lang-btn');
+  if(btn) btn.classList.toggle('on-dark', darkPages.includes(id));
+}
+
+// ═══════════ AUTH ═══════════
+function switchTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('auth-login').classList.toggle('hidden',tab!=='login');
+  document.getElementById('auth-register').classList.toggle('hidden',tab!=='register');
+}
+function doSocialLogin(){ showPage('page-role'); }
+
+// ═══════════ SUBJECTS ═══════════
+function sName(s){ return state.lang==='hi' && s.nameHi ? s.nameHi : s.name; }
+function sGrade(s){ return state.lang==='hi' && s.gradeHi ? s.gradeHi : s.grade; }
+function tName(tp){ return state.lang==='hi' && tp.nameHi ? tp.nameHi : tp.name; }
+function tSpTitle(tp){ return state.lang==='hi' && tp.simplyPut.titleHi ? tp.simplyPut.titleHi : tp.simplyPut.title; }
+function tSpBody(tp){ return state.lang==='hi' && tp.simplyPut.bodyHi ? tp.simplyPut.bodyHi : tp.simplyPut.body; }
+function aTitle(a){ return state.lang==='hi' && a.titleHi ? a.titleHi : a.title; }
+function aDesc(a){ return state.lang==='hi' && a.descHi ? a.descHi : a.desc; }
+function cName(c){ return state.lang==='hi' && c.nameHi ? c.nameHi : c.name; }
+function cTask(c){ return state.lang==='hi' && c.taskHi ? c.taskHi : c.task; }
+function cDesc(c){ return state.lang==='hi' && c.descHi ? c.descHi : c.desc; }
+
+function renderSubjects(){
+  const hi = state.lang==='hi';
+  document.getElementById('subject-grid').innerHTML = subjects.map(s=>`
+    <div class="subject-card" onclick="openSubject('${s.id}')">
+      <span class="subj-icon">${s.icon}</span>
+      <div class="subj-name">${sName(s)}</div>
+      <div class="subj-count">${s.topicCount} ${hi?'विषय-वस्तु':'topics'} · ${hi?'कक्षा':'Class'} ${sGrade(s)}</div>
+    </div>`).join('');
+}
+
+// ═══════════ TOPICS ═══════════
+function openSubject(id){
+  state.currentSubject=id;
+  const subj=subjects.find(s=>s.id===id);
+  document.getElementById('nav-subject-name').textContent=sName(subj);
+  document.getElementById('bc-subject').textContent=sName(subj);
+  state.gradeFilter='all';
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('active',
+    b.textContent===t('topics.allgrades')||b.textContent==='All Grades'));
+  document.getElementById('topic-search').value='';
+  document.getElementById('sort-select').value='default';
+  renderTopics(); showPage('page-topics');
+}
+function getTopics(){
+  const all=topicsData[state.currentSubject]||[];
+  const q=(document.getElementById('topic-search')?.value||'').toLowerCase();
+  const g=state.gradeFilter;
+  const sort=document.getElementById('sort-select')?.value||'default';
+  let out=all.filter(tp=>{
+    const matchQ=!q||tp.name.toLowerCase().includes(q)||(tp.nameHi||'').includes(q);
+    const matchG=g==='all'||tp.grade===g;
+    return matchQ&&matchG;
+  });
+  if(sort==='az') out.sort((a,b)=>tName(a).localeCompare(tName(b)));
+  if(sort==='za') out.sort((a,b)=>tName(b).localeCompare(tName(a)));
+  return out;
+}
+function renderTopics(){
+  const topics=getTopics();
+  const list=document.getElementById('topic-list');
+  const hi=state.lang==='hi';
+  if(!topics.length){
+    list.innerHTML=`<div style="text-align:center;padding:3rem;color:var(--muted)">${hi?'कोई विषय नहीं मिला।':'No topics found. Try different keywords.'}</div>`;
+    return;
+  }
+  list.innerHTML=topics.map((tp,i)=>`
+    <div class="topic-row" onclick="openTopic('${tp.id}')">
+      <div class="topic-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="topic-info">
+        <div class="topic-name">${tName(tp)}</div>
+        <div class="topic-preview">${tSpTitle(tp)}</div>
+      </div>
+      <div class="topic-meta">
+        <span class="badge badge-teal">${hi?'कक्षा':'Class'} ${tp.grade}</span>
+        <span class="topic-arrow">›</span>
+      </div>
+    </div>`).join('');
+}
+function filterTopics(){ renderTopics(); }
+function setGrade(btn,grade){
+  state.gradeFilter=grade;
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); renderTopics();
+}
+
+// ═══════════ TOPIC DETAIL ═══════════
+function openTopic(id, noNav){
+  const topics=topicsData[state.currentSubject]||[];
+  const tp=topics.find(x=>x.id===id); if(!tp) return;
+  state.currentTopic=id;
+  const subj=subjects.find(s=>s.id===state.currentSubject);
+  const hi=state.lang==='hi';
+  const subjN=sName(subj);
+  const topicN=tName(tp);
+  const gradeLabel=(hi?'कक्षा':'Class')+' '+tp.grade;
+
+  document.getElementById('det-eyebrow').textContent=`${subjN} · ${gradeLabel}`;
+  document.getElementById('det-title').textContent=topicN;
+  document.getElementById('det-grade-badge').textContent=gradeLabel;
+  document.getElementById('det-subject-badge').textContent=subjN;
+  document.getElementById('bc-det-subject').textContent=subjN;
+  document.getElementById('bc-det-topic').textContent=topicN;
+  document.getElementById('nav-det-subject').textContent=subjN;
+  document.getElementById('expert-initials').textContent=tp.expert.initials;
+  document.getElementById('expert-name').textContent=tp.expert.name;
+  document.getElementById('expert-role').textContent=tp.expert.role;
+  document.getElementById('expert-verified').textContent=t('detail.verified');
+
+  // Simply Put
+  document.getElementById('sp-label').textContent=t('detail.simply');
+  document.getElementById('sp-title').textContent=tSpTitle(tp);
+  document.getElementById('sp-body').innerHTML=tSpBody(tp);
+
+  // Section headers
+  document.getElementById('apps-section-title').textContent=t('detail.apps.title');
+  document.getElementById('apps-section-sub').textContent=t('detail.apps.sub');
+  document.getElementById('careers-section-title').textContent=t('detail.careers.title');
+  document.getElementById('careers-section-sub').textContent=t('detail.careers.sub');
+
+  // Apps grid
+  document.getElementById('det-apps-grid').innerHTML=tp.apps.map(a=>`
+    <div class="app-card">
+      <div class="app-visual" style="background:${a.bg}">${a.icon}</div>
+      <div class="app-title">${aTitle(a)}</div>
+      <div class="app-desc">${aDesc(a)}</div>
+    </div>`).join('');
+
+  // Careers
+  document.getElementById('det-career-grid').innerHTML=tp.careers.map(c=>`
+    <div class="career-card" onclick="openCareer('${c.id}')">
+      <div class="career-icon-wrap" style="background:${c.bg}">${c.icon}</div>
+      <div class="career-name">${cName(c)}</div>
+      <div class="career-task">${cTask(c)}</div>
+      <div class="career-link">${t('detail.career.link')}</div>
+    </div>`).join('');
+
+  // Bookmark
+  const bm=state.bookmarks.find(b=>b.subjectId===state.currentSubject&&b.topicId===id);
+  state.isBookmarked=!!bm; updateBookmarkBtn();
+  if(!noNav) showPage('page-detail');
+  else applyTranslations(); // refresh static labels on re-render
+}
+
+// ═══════════ CAREER DETAIL ═══════════
+function openCareer(careerId, noNav){
+  const topics=topicsData[state.currentSubject]||[];
+  const tp=topics.find(x=>x.id===state.currentTopic); if(!tp) return;
+  const c=tp.careers.find(x=>x.id===careerId); if(!c) return;
+  state.currentCareer=careerId;
+  const subj=subjects.find(s=>s.id===state.currentSubject);
+  const subjN=sName(subj); const topicN=tName(tp); const careerN=cName(c);
+
+  document.getElementById('car-big-icon').style.background=c.bg;
+  document.getElementById('car-big-icon').textContent=c.icon;
+  document.getElementById('car-title').textContent=careerN;
+  document.getElementById('car-sub').textContent=cTask(c);
+  document.getElementById('bc-car-subject').textContent=subjN;
+  document.getElementById('bc-car-topic').textContent=topicN;
+  document.getElementById('bc-car-career').textContent=careerN;
+  document.getElementById('nav-car-subject').textContent=subjN;
+  document.getElementById('nav-car-topic').textContent=topicN;
+  document.getElementById('car-desc-label').textContent=t('career.desc.label');
+  document.getElementById('car-desc').innerHTML=cDesc(c);
+  document.getElementById('video-label').textContent=t('career.video.label');
+  document.getElementById('video-title').textContent=`${c.videoExpert} — ${c.videoRole}`;
+  document.getElementById('video-quote').textContent=c.videoQuote;
+  document.getElementById('car-badges').innerHTML=`<span class="badge badge-teal">${subjN}</span><span class="badge badge-amber">${topicN}</span>`;
+  document.getElementById('car-skills-label').textContent=t('career.skills');
+  document.getElementById('car-skills').innerHTML=c.skills.map(s=>`<span class="skill-pill">${s}</span>`).join('');
+  document.getElementById('car-back-btn').textContent=t('career.back');
+  if(!noNav) showPage('page-career');
+}
+function openVideo(){
+  const topics=topicsData[state.currentSubject]||[];
+  const tp=topics.find(x=>x.id===state.currentTopic);
+  const c=tp?.careers.find(x=>x.id===state.currentCareer);
+  showToast(state.lang==='hi'
+    ? `वीडियो खुल रहा है: "${c?.videoExpert}"`
+    : `Opening: "${c?.videoExpert}" — link your video URL here`);
+}
+
+// ═══════════ BOOKMARKS ═══════════
+function toggleBookmark(){
+  const topics=topicsData[state.currentSubject]||[];
+  const tp=topics.find(x=>x.id===state.currentTopic);
+  const subj=subjects.find(s=>s.id===state.currentSubject);
+  if(!tp) return;
+  const idx=state.bookmarks.findIndex(b=>b.subjectId===state.currentSubject&&b.topicId===state.currentTopic);
+  const hi=state.lang==='hi';
+  if(idx>=0){
+    state.bookmarks.splice(idx,1);state.isBookmarked=false;
+    showToast(hi?'बुकमार्क हटा दिया गया':'Bookmark removed');
+  } else {
+    state.bookmarks.push({
+      subjectId:state.currentSubject, subjectName:subj.name, subjectNameHi:subj.nameHi||subj.name,
+      topicId:state.currentTopic, topicName:tp.name, topicNameHi:tp.nameHi||tp.name, grade:tp.grade
+    });
+    state.isBookmarked=true;
+    showToast(hi?'बुकमार्क में सहेजा गया!':'Saved to bookmarks!');
+  }
+  localStorage.setItem('spark_bm',JSON.stringify(state.bookmarks));
+  updateBookmarkBtn();
+}
+function updateBookmarkBtn(){
+  const s=state.isBookmarked;
+  const btn=document.getElementById('bookmark-btn');
+  if(!btn) return;
+  btn.classList.toggle('saved',s);
+  document.getElementById('bm-icon').textContent=s?'★':'🔖';
+  document.getElementById('bm-label').textContent=s?t('detail.bookmarked'):t('detail.bookmark');
+}
+function renderBookmarks(){
+  const list=document.getElementById('bookmark-list');
+  const empty=document.getElementById('bookmark-empty');
+  const hi=state.lang==='hi';
+  if(!state.bookmarks.length){list.innerHTML='';empty.classList.remove('hidden');return;}
+  empty.classList.add('hidden');
+  list.innerHTML=`<div style="display:flex;flex-direction:column;gap:0.75rem">${state.bookmarks.map(b=>`
+    <div class="topic-row" onclick="openFromBookmark('${b.subjectId}','${b.topicId}')">
+      <div class="topic-info">
+        <div class="topic-name">${hi&&b.topicNameHi ? b.topicNameHi : b.topicName}</div>
+        <div class="topic-preview">${hi&&b.subjectNameHi ? b.subjectNameHi : b.subjectName} · ${hi?'कक्षा':'Class'} ${b.grade}</div>
+      </div>
+      <div class="topic-meta">
+        <span class="badge badge-teal">${hi&&b.subjectNameHi ? b.subjectNameHi : b.subjectName}</span>
+        <span class="topic-arrow">›</span>
+      </div>
+    </div>`).join('')}</div>`;
+}
+function openFromBookmark(subjectId,topicId){state.currentSubject=subjectId;openTopic(topicId);}
+
+// ═══════════ TOAST ═══════════
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+
+// ═══════════ CERTIFICATION DATA ═══════════
+const certQuestions = {
+  maths: [
+    {q:"Riya opens a samosa stall. Her fixed cost is ₹400 and each samosa costs ₹3 to make. She sells each for ₹7. How many samosas must she sell to break even?",opts:["50","80","100","120"],ans:2,fb:"At break-even, Revenue = Cost. So 7x = 400 + 3x → 4x = 400 → x = 100. This is the direct application of a linear equation in business planning."},
+    {q:"A train travels at 60 km/h. A linear equation to find time (t) to cover 300 km is:",opts:["t = 300 + 60","t = 300 / 60","t = 60 × 300","t = 300 − 60"],ans:1,fb:"Time = Distance ÷ Speed. This is the most fundamental real-world linear equation, used in every navigation app and logistics system."},
+    {q:"A nurse must give 0.05 mg of medicine per kg of body weight. A child weighs 40 kg. What dose is required?",opts:["0.5 mg","1 mg","2 mg","2.5 mg"],ans:2,fb:"Dose = 0.05 × 40 = 2 mg. This linear relationship is used in hospitals worldwide to prevent over- or under-dosing."},
+    {q:"Which profession uses quadratic equations to model the path of a rocket after launch?",opts:["Accountant","Aerospace Engineer","Nurse","Librarian"],ans:1,fb:"Aerospace engineers model projectile and orbital paths using quadratic (and higher-order) equations — the trajectory of any launched object follows a parabolic curve."},
+    {q:"A GPS app calculates your position using coordinate geometry. Which concept is it applying?",opts:["Arithmetic progressions","Trigonometry","Coordinate geometry","Polynomials"],ans:2,fb:"GPS systems use coordinate geometry — your latitude and longitude are literally (x, y) coordinates on a spherical grid."},
+    {q:"An architect creates a scale drawing where 1 cm = 2 metres. This is an application of:",opts:["Quadratic equations","Similar triangles","Circles","Arithmetic progressions"],ans:1,fb:"Scale drawings use the principle of similar triangles — same angles, proportional sides. Every architectural blueprint is built on this concept."},
+    {q:"A stadium has 20 seats in the first row, and each subsequent row has 3 more seats. What topic describes this pattern?",opts:["Quadratic equations","Trigonometry","Arithmetic progressions","Polynomials"],ans:2,fb:"This is an arithmetic progression with first term 20 and common difference 3. Stadium seating, salary ladders, and EMI payments all follow APs."},
+    {q:"A packaging engineer wants to wrap a cylindrical tin with minimum material. Which topic helps calculate the exact amount of wrapping needed?",opts:["Coordinate geometry","Surface area and volume","Trigonometry","Arithmetic progressions"],ans:1,fb:"Surface area gives the total area of the tin's outer faces — exactly what the packaging engineer needs to minimise material waste."},
+    {q:"A seismologist receives earthquake signals from three different stations. To find the exact epicentre location, she uses:",opts:["Polynomials","Arithmetic progressions","Trigonometry","Circles"],ans:2,fb:"Triangulating a location from three known points uses trigonometry — specifically the intersection of circles derived from signal travel times."},
+    {q:"A data scientist at a food delivery app predicts how many orders will arrive on a given evening. This is an application of:",opts:["Circles","Surface area","Statistics and probability","Coordinate geometry"],ans:2,fb:"Predicting counts based on historical data is a core application of statistics and probability — the same tools used in weather forecasting and medical research."},
+  ],
+  physics:[
+    {q:"A cricket ball is bowled at high speed. It slows down after the batsman hits it. Which law explains the force the bat exerts?",opts:["Law of Gravitation","Newton's 1st Law","Newton's 3rd Law","Ohm's Law"],ans:2,fb:"Newton's 3rd Law: every action has an equal and opposite reaction. The bat exerts a force on the ball, and the ball exerts the same force back on the bat."},
+    {q:"GPS satellites must account for the fact that gravity is weaker at high altitude. This is an application of:",opts:["Ohm's Law","Gravitation","Electromagnetic induction","Refraction"],ans:1,fb:"GPS satellites experience weaker gravity at orbital altitude. Without correcting for this using gravitational theory, GPS would drift by kilometres per day."},
+  ],
+};
+
+const certProgress = JSON.parse(localStorage.getItem('spark_cert_prog') || '{}');
+// {subjId: {reviewed: true, score: 85, date: '2024-03-15', passed: true}}
+
+let quizState = {subjId:null, questions:[], current:0, score:0, answered:false};
+
+// ─── RENDER CERT SUBJECT GRID ───
+function renderCertSubjects(){
+  const grid = document.getElementById('cert-subject-grid');
+  if(!grid) return;
+  grid.innerHTML = subjects.map(s => {
+    const prog = certProgress[s.id] || {};
+    const hasCert = prog.passed;
+    const reviewed = prog.reviewed;
+    const pct = reviewed ? 100 : 0;
+    const color = s.color;
+    const statusHtml = hasCert
+      ? `<div class="csc-status" style="color:var(--green)">🏅 Certified · ${prog.score}%</div>`
+      : reviewed
+        ? `<div class="csc-status" style="color:var(--amber)">📖 Ready to test</div>`
+        : `<div class="csc-status" style="color:var(--muted)">○ Not started</div>`;
+    const actionLabel = hasCert ? 'Retake test ›' : reviewed ? 'Take test ›' : 'Explore content ›';
+    const actionFn = hasCert || reviewed
+      ? `startQuiz('${s.id}')`
+      : `openSubject('${s.id}')`;
+    return `<div class="cert-subj-card">
+      <div class="csc-top">
+        <div class="csc-icon" style="background:${color}22">${s.icon}</div>
+        <div>
+          <div class="csc-name">${s.name}</div>
+          <div class="csc-topics">${s.topicCount} topics to explore</div>
+        </div>
+      </div>
+      <div class="csc-prog">
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="prog-txt"><span>${pct === 100 ? 'All content reviewed' : 'Explore content first'}</span><span>${pct}%</span></div>
+      </div>
+      <div class="csc-foot">
+        ${statusHtml}
+        <button class="csc-action" onclick="${actionFn}">${actionLabel}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RENDER MY CERTIFICATES ───
+function renderMyCerts(){
+  const el = document.getElementById('mycerts-content');
+  if(!el) return;
+  const earned = subjects.filter(s => certProgress[s.id]?.passed);
+  if(!earned.length){
+    el.innerHTML = `<div class="no-certs"><div style="font-size:3rem;opacity:0.3;margin-bottom:0.8rem">📜</div><div style="font-size:1rem;font-weight:600;color:var(--gray);margin-bottom:0.4rem">No certificates yet</div><p style="font-size:0.85rem;margin-bottom:1.5rem">Pass the test for any subject with 70%+ to earn your first certificate.</p><button class="btn btn-primary" onclick="showPage('page-certify')">Get certified →</button></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="cert-badge-grid">${earned.map(s=>{
+    const p = certProgress[s.id];
+    return `<div class="cert-badge">
+      <div class="cb-ribbon">CERTIFIED</div>
+      <span class="cb-medal">${s.icon}</span>
+      <div class="cb-subj">Spark Certificate</div>
+      <div class="cb-title">${s.name}</div>
+      <div class="cb-date">${p.date || 'April 2025'}</div>
+      <div class="cb-score">⭐ ${p.score}%</div>
+    </div>`;
+  }).join('')}</div>`;
+  // Update dashboard stat
+  const cnt = document.getElementById('teacher-cert-count');
+  if(cnt) cnt.textContent = earned.length;
+}
+
+// ─── QUIZ ENGINE ───
+function startQuiz(subjId){
+  const qs = certQuestions[subjId];
+  if(!qs || !qs.length){ showToast('Quiz coming soon for this subject!'); return; }
+  quizState = {subjId, questions:qs, current:0, score:0, answered:false};
+  showPage('page-quiz');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const {questions, current, subjId} = quizState;
+  const subj = subjects.find(s=>s.id===subjId);
+  const container = document.getElementById('quiz-container');
+  if(!container) return;
+  if(current >= questions.length){
+    renderQuizResult(); return;
+  }
+  const q = questions[current];
+  const pct = Math.round((current / questions.length) * 100);
+  const letters = ['A','B','C','D'];
+  container.innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-subj-tag">${subj?.name || ''} · Spark Certification</div>
+      <div class="quiz-title">Real-World Knowledge Test</div>
+      <div class="quiz-prog-row">
+        <div class="quiz-prog-bar"><div class="quiz-prog-fill" style="width:${pct}%"></div></div>
+        <div class="quiz-count">Q${current+1} of ${questions.length}</div>
+      </div>
+    </div>
+    <div class="quiz-card" id="quiz-card">
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((opt,i)=>`
+          <button class="quiz-opt" id="qopt-${i}" onclick="selectOpt(${i})">
+            <div class="opt-circle">${letters[i]}</div>
+            ${opt}
+          </button>`).join('')}
+      </div>
+      <div id="quiz-fb" style="display:none" class="quiz-fb"></div>
+    </div>
+    <div class="quiz-nav" id="quiz-nav" style="display:none">
+      <button class="btn btn-primary" onclick="nextQuestion()">${current+1 < questions.length ? 'Next question →' : 'See result →'}</button>
+    </div>`;
+  quizState.answered = false;
+}
+
+function selectOpt(idx){
+  if(quizState.answered) return;
+  quizState.answered = true;
+  const q = quizState.questions[quizState.current];
+  const correct = q.ans === idx;
+  if(correct) quizState.score++;
+  document.querySelectorAll('.quiz-opt').forEach((btn,i)=>{
+    btn.disabled = true;
+    if(i === q.ans) btn.classList.add('correct');
+    else if(i === idx) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('quiz-fb');
+  if(fb){ fb.textContent = q.fb; fb.style.display='block'; }
+  const nav = document.getElementById('quiz-nav');
+  if(nav) nav.style.display='flex';
+}
+
+function nextQuestion(){
+  quizState.current++;
+  renderQuestion();
+}
+
+function renderQuizResult(){
+  const {questions, score, subjId} = quizState;
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+  const passed = pct >= 70;
+  const subj = subjects.find(s=>s.id===subjId);
+  const container = document.getElementById('quiz-container');
+  const medal = passed ? '🏅' : '📚';
+  const title = passed ? 'You are Spark Certified!' : 'Keep exploring — almost there!';
+  const today = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  if(passed){
+    certProgress[subjId] = {reviewed:true, passed:true, score:pct, date:today};
+    localStorage.setItem('spark_cert_prog', JSON.stringify(certProgress));
+  } else {
+    if(!certProgress[subjId]) certProgress[subjId] = {reviewed:true};
+    localStorage.setItem('spark_cert_prog', JSON.stringify(certProgress));
+  }
+  container.innerHTML = `
+    <div class="quiz-result">
+      <span class="qr-medal">${medal}</span>
+      <div class="qr-title">${title}</div>
+      <div class="qr-score-line">You scored <em>${score} out of ${total}</em> (${pct}%) — ${passed ? 'Pass ✓' : 'Need 70% to pass'}</div>
+      ${passed ? `<div class="qr-cert-box">
+        <div class="qr-cert-icon">📜</div>
+        <div><span class="qr-cert-title">Spark Certified — ${subj?.name}</span><span class="qr-cert-sub">Issued ${today} · Valid 1 year</span></div>
+      </div>` : `<div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:var(--radius);padding:1rem 1.2rem;font-size:0.85rem;color:var(--muted);margin:1rem 0;line-height:1.6">
+        Review the topic content more carefully and try again. Focus on the <strong style="color:var(--white)">real-world application</strong> sections — the questions are based on those.
+      </div>`}
+      <div class="qr-actions">
+        <button class="btn btn-primary" onclick="showPage('page-mycerts');renderMyCerts()">${passed ? 'View my certificate' : 'Retake test'}</button>
+        <button class="btn btn-ghost" onclick="showPage('page-certify');renderCertSubjects()">All certifications</button>
+        <button class="btn btn-outline" onclick="showPage('page-teacher')">Dashboard</button>
+      </div>
+    </div>`;
+}
+
+// ═══════════ INIT ═══════════
+// Restore saved language
+state.lang = localStorage.getItem('spark_lang')||'en';
+renderSubjects();
+renderCertSubjects();
+renderMyCerts();
+applyTranslations();
+// Update teacher cert count on load
+const _earned = subjects.filter(s=>certProgress[s.id]?.passed).length;
+const _cnt = document.getElementById('teacher-cert-count');
+if(_cnt) _cnt.textContent = _earned;
+
+</script>
+</body>
+</html>
