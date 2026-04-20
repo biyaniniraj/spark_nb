@@ -6,11 +6,10 @@
     </div>
     <div class="landing-content">
       <div class="landing-eyebrow">{{ t('landing.eyebrow') }}</div>
-      <h1 class="landing-headline"><em>{{ t('landing.headline.em') }}</em><br><span v-html="t('landing.headline.rest.html')"></span></h1>
+      <h1 class="landing-headline" v-html="t('landing.headline.html')"></h1>
       <p class="landing-sub">{{ t('landing.sub') }}</p>
       <div class="landing-cta-row">
         <button class="btn btn-amber btn-lg" @click="router.push('/auth')">{{ t('landing.cta1') }}</button>
-        <button class="btn btn-outline btn-lg" @click="router.push('/auth')">{{ t('landing.cta2') }}</button>
       </div>
       <div class="landing-stats">
         <div class="stat-item"><div class="stat-num">10</div><div class="stat-label">{{ t('stats.subjects') }}</div></div>
@@ -39,7 +38,7 @@ const { t } = useLangStore()
 .bg-circle.c3 { width: 200px; height: 200px; top: 40%; left: 10%; }
 .landing-content { position: relative; z-index: 1; max-width: 640px; }
 .landing-eyebrow { font-size: 0.8rem; font-weight: 500; color: var(--teal2); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; }
-.landing-headline { font-family: var(--font-display); font-size: clamp(2.4rem,6vw,4rem); color: var(--white); line-height: 1.15; margin-bottom: 1.5rem; }
+.landing-headline { font-family: var(--font-display); font-size: clamp(2.4rem,6vw,4rem); color: var(--white); line-height: 1.15; margin-bottom: 1.5rem; white-space: nowrap; }
 .landing-headline em { color: var(--amber); font-style: italic; }
 .landing-sub { font-size: 1.05rem; color: var(--muted); line-height: 1.7; margin-bottom: 2.5rem; }
 .landing-cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }

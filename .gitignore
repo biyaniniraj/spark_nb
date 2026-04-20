@@ -24,5 +24,8 @@ frontend/dist/
 # Audit/validation reports
 validations/
 
+# MCP config — contains API tokens
+.mcp.json
+
 # Local assets
 1000171465.jpg

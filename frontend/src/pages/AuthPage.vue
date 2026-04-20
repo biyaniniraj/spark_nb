@@ -9,6 +9,8 @@
       </div>
 
       <!-- Login -->
+      <div v-if="error" style="color:#ef4444;font-size:0.85rem;margin-bottom:1rem;padding:0.6rem;background:#fef2f2;border-radius:6px">{{ error }}</div>
+
       <div v-if="tab === 'login'">
         <div class="social-btns">
           <button class="social-btn" @click="socialLogin('google')">
@@ -19,16 +21,16 @@
           </button>
         </div>
         <div class="divider">{{ t('auth.divider') }}</div>
-        <div class="form-group"><label class="form-label">{{ t('auth.email') }}</label><input class="form-input" type="email" v-model="email"></div>
-        <div class="form-group"><label class="form-label">{{ t('auth.password') }}</label><input class="form-input" type="password" v-model="password"></div>
+        <div class="form-group"><label class="form-label">{{ t('auth.email') }}</label><input class="form-input" type="email" v-model="email" @keyup.enter="login"></div>
+        <div class="form-group"><label class="form-label">{{ t('auth.password') }}</label><input class="form-input" type="password" v-model="password" @keyup.enter="login"></div>
         <button class="btn btn-primary" style="width:100%;justify-content:center" @click="login">{{ t('auth.signin') }}</button>
       </div>
 
       <!-- Register -->
       <div v-else>
-        <div class="form-group"><label class="form-label">{{ t('auth.fullname') }}</label><input class="form-input" v-model="name"></div>
-        <div class="form-group"><label class="form-label">{{ t('auth.email') }}</label><input class="form-input" type="email" v-model="email"></div>
-        <div class="form-group"><label class="form-label">{{ t('auth.password') }}</label><input class="form-input" type="password" v-model="password"></div>
+        <div class="form-group"><label class="form-label">{{ t('auth.fullname') }}</label><input class="form-input" v-model="name" @keyup.enter="register"></div>
+        <div class="form-group"><label class="form-label">{{ t('auth.email') }}</label><input class="form-input" type="email" v-model="email" @keyup.enter="register"></div>
+        <div class="form-group"><label class="form-label">{{ t('auth.password') }}</label><input class="form-input" type="password" v-model="password" @keyup.enter="register"></div>
         <button class="btn btn-primary" style="width:100%;justify-content:center" @click="register">{{ t('auth.create') }}</button>
       </div>
     </div>
@@ -49,16 +51,28 @@ const tab = ref('login')
 const email = ref('')
 const password = ref('')
 const name = ref('')
+const error = ref('')
 
 async function login() {
-  await auth.signIn(email.value, password.value)
-  router.push('/role')
+  error.value = ''
+  try {
+    await auth.signIn(email.value, password.value)
+    router.push('/role')
+  } catch (e) {
+    error.value = e.message
+  }
 }
 async function register() {
-  await auth.signUp(email.value, password.value, name.value)
-  router.push('/role')
+  error.value = ''
+  try {
+    await auth.signUp(email.value, password.value, name.value)
+    router.push('/role')
+  } catch (e) {
+    error.value = e.message
+  }
 }
 async function socialLogin(provider) {
+  error.value = ''
   await auth.signInWithProvider(provider)
   router.push('/role')
 }

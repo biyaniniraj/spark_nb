@@ -12,6 +12,11 @@
         <button class="grade-btn" :class="{ active: grade === '9' }" @click="grade='9'">{{ t('topics.class9') }}</button>
         <button class="grade-btn" :class="{ active: grade === '10' }" @click="grade='10'">{{ t('topics.class10') }}</button>
       </div>
+      <select class="sort-select" v-model="sortOrder">
+        <option value="default">{{ t('topics.sort.default') }}</option>
+        <option value="az">{{ t('topics.sort.az') }}</option>
+        <option value="za">{{ t('topics.sort.za') }}</option>
+      </select>
     </div>
     <div class="topic-list">
       <TopicRow
@@ -42,6 +47,7 @@ const subject = ref(null)
 const topics = ref([])
 const search = ref('')
 const grade = ref('all')
+const sortOrder = ref('default')
 
 onMounted(async () => {
   const id = route.params.subjectId
@@ -49,11 +55,14 @@ onMounted(async () => {
   topics.value = await api.get(`/topics?subject_id=${id}`)
 })
 
-const filtered = computed(() =>
-  topics.value
+const filtered = computed(() => {
+  let list = topics.value
     .filter(t => grade.value === 'all' || t.grade === grade.value)
     .filter(t => t.name.toLowerCase().includes(search.value.toLowerCase()))
-)
+  if (sortOrder.value === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name))
+  if (sortOrder.value === 'za') list = [...list].sort((a, b) => b.name.localeCompare(a.name))
+  return list
+})
 </script>
 
 <style scoped>
@@ -61,5 +70,4 @@ const filtered = computed(() =>
 .grade-filter { display: flex; gap: 0.4rem; }
 .grade-btn { padding: 0.45rem 1rem; border-radius: 20px; border: 1.5px solid var(--lgray); font-size: 0.8rem; font-weight: 500; cursor: pointer; background: var(--white); color: var(--gray); transition: all var(--transition); }
 .grade-btn.active { background: var(--navy); color: var(--white); border-color: var(--navy); }
-.topic-list { max-width: 960px; margin: 0 auto; width: 100%; padding: 1.5rem 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
 </style>

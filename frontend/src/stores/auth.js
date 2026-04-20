@@ -7,19 +7,19 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function init() {
     const { data } = await supabase.auth.getUser()
-    if (data.user) user.value = { ...data.user, role: data.user.user_metadata?.role }
+    if (data.user) user.value = { ...data.user, role: data.user.user_metadata?.role, name: data.user.user_metadata?.name }
   }
 
   async function signIn(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
-    user.value = { ...data.user, role: data.user.user_metadata?.role }
+    user.value = { ...data.user, role: data.user.user_metadata?.role, name: data.user.user_metadata?.name }
   }
 
   async function signUp(email, password, name) {
     const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
     if (error) throw error
-    user.value = data.user
+    user.value = { ...data.user, name }
   }
 
   async function signInWithProvider(provider) {
@@ -27,6 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function signOut() {
+    const { endSession, stopHeartbeat } = await import('@/composables/useSession').then(m => m.useSession())
+    stopHeartbeat()
+    await endSession()
     await supabase.auth.signOut()
     user.value = null
   }

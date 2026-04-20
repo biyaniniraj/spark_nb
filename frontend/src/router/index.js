@@ -14,6 +14,8 @@ const routes = [
   { path: '/certify',            name: 'certify',       component: () => import('@/pages/CertifyHubPage.vue'),    meta: { requiresAuth: true, role: 'Teacher' } },
   { path: '/certs',              name: 'my-certs',      component: () => import('@/pages/MyCertsPage.vue'),       meta: { requiresAuth: true, role: 'Teacher' } },
   { path: '/quiz/:subjectId',    name: 'quiz',          component: () => import('@/pages/QuizPage.vue'),          meta: { requiresAuth: true, role: 'Teacher' } },
+  { path: '/profile',            name: 'profile',       component: () => import('@/pages/MyProfilePage.vue'),     meta: { requiresAuth: true } },
+  { path: '/reports',            name: 'reports',       component: () => import('@/pages/ReportsPage.vue'),       meta: { requiresAuth: true } },
 ]
 
 const router = createRouter({
