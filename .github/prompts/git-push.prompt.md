@@ -6,19 +6,24 @@ tools: [execute]
 
 Run the following git commands in sequence in the terminal, stopping and reporting if any step fails:
 
-1. Stage all changes:
+1. Create and switch to a new branch named with the current timestamp:
+```
+git checkout -b "spark_branch_$(date '+%Y%m%d_%H%M%S')"
+```
+
+2. Stage all changes:
 ```
 git add .
 ```
 
-2. Commit with the git username and current timestamp as the message:
+3. Commit with the git username and current timestamp as the message:
 ```
 git commit -m "$(git config user.name) — $(date '+%Y-%m-%d %H:%M:%S')"
 ```
 
-3. Push to remote:
+4. Push to remote:
 ```
-git push
+git push -u origin HEAD
 ```
 
 After each command, confirm it succeeded before proceeding to the next. Report the final status when done.
