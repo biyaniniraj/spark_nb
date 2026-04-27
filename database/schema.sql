@@ -275,3 +275,38 @@ create index idx_bookmarks_user      on bookmarks(user_id);
 create index idx_activity_user       on activity_logs(user_id);
 create index idx_activity_type       on activity_logs(activity_type);
 create index idx_cert_user           on certificates(user_id);
+
+-- ──────────────────────────────────────────
+-- MIGRATIONS (applied post initial schema)
+-- ──────────────────────────────────────────
+
+-- Add video support to topic_content and real_world_apps
+ALTER TABLE topic_content ADD COLUMN IF NOT EXISTS video_url text;
+ALTER TABLE real_world_apps ADD COLUMN IF NOT EXISTS video_url text;
+
+-- Expert profession voices (many per topic, with optional video)
+CREATE TABLE IF NOT EXISTS topic_profession_voices (
+  id                  uuid primary key default gen_random_uuid(),
+  topic_id            uuid not null references topics(topic_id) on delete cascade,
+  profession_title    varchar(200) not null,
+  profession_title_hi varchar(200),
+  quote_text          text not null,
+  quote_text_hi       text,
+  subtopic_link       varchar(300),
+  video_url           text,
+  sort_order          int not null default 0,
+  inserted_at         timestamptz not null default now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_profession_voices_topic ON topic_profession_voices(topic_id);
+
+-- Per-user subject selections for PAID_LIMITED plan users
+CREATE TABLE IF NOT EXISTS user_subject_selections (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references users(user_id) on delete cascade,
+  subject_id uuid not null references subjects(subject_id) on delete cascade,
+  inserted_at timestamptz not null default now(),
+  unique (user_id, subject_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_subject_sel_user ON user_subject_selections(user_id);

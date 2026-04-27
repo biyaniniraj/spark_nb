@@ -5,9 +5,20 @@ import { supabase } from '@/lib/supabase'
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
 
+  function _applySession(session) {
+    if (session?.user) {
+      user.value = { ...session.user, role: session.user.user_metadata?.role, name: session.user.user_metadata?.name }
+    } else {
+      user.value = null
+    }
+  }
+
   async function init() {
-    const { data } = await supabase.auth.getUser()
-    if (data.user) user.value = { ...data.user, role: data.user.user_metadata?.role, name: data.user.user_metadata?.name }
+    const { data } = await supabase.auth.getSession()
+    _applySession(data.session)
+    supabase.auth.onAuthStateChange((_event, session) => {
+      _applySession(session)
+    })
   }
 
   async function signIn(email, password) {

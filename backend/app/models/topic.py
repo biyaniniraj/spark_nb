@@ -18,6 +18,7 @@ class TopicContent(BaseModel):
     title: str
     body: str
     version: int
+    video_url: Optional[str] = None
 
 class RealWorldApp(BaseModel):
     id: str
@@ -29,6 +30,7 @@ class RealWorldApp(BaseModel):
     description: str
     description_hi: Optional[str]
     sort_order: int
+    video_url: Optional[str] = None
 
 class Expert(BaseModel):
     expert_id: str
@@ -36,3 +38,14 @@ class Expert(BaseModel):
     name: str
     role: str
     initials: str
+
+class ProfessionVoice(BaseModel):
+    id: str
+    topic_id: str
+    profession_title: str
+    profession_title_hi: Optional[str] = None
+    quote_text: str
+    quote_text_hi: Optional[str] = None
+    subtopic_link: Optional[str] = None
+    video_url: Optional[str] = None
+    sort_order: int

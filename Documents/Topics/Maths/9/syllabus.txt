@@ -1,0 +1,130 @@
+NCERT Mathematics - Class 9 Syllabus
+=====================================
+
+Chapter 1: Number Systems
+- Rational and irrational numbers
+- Real numbers on the number line
+- Representing real numbers on the number line (successive magnification)
+- Operations on real numbers
+- Laws of exponents for real numbers
+
+---
+
+### The Day Riya Measured the World
+
+Riya's family just moved into a new flat. Her father hands her a measuring tape: *"Mark the ropes we need."*
+
+The window is exactly **3 metres**. Clean. She writes it as 3/1. Any measurement expressible as one integer over another — 1/2, 7/4, 0.333… — is a **rational number**. Predictable. Tidy.
+
+Then comes the tricky one. A square tile, 1m × 1m. She measures its diagonal: **1.41421356…** The digits never end, never repeat. She tries writing it as a fraction. She can't. Nobody can. This is **√2** — an **irrational number**. It's physically there, stretched across the tile, but it refuses to be tamed into p/q.
+
+Now imagine every rope ever cut — 3m, 1/2m, √2m, πm — laid out on a single line. Every rational, every irrational, no gaps. **That line is the Real Numbers.**
+
+---
+
+> Rational numbers are the ropes you can order from a catalogue. Irrational numbers are what reality hands you when you measure diagonals. Real numbers are the drawer that holds them all.
+
+
+Chapter 2: Polynomials
+- Polynomials in one variable
+- Zeroes of a polynomial
+- Remainder theorem
+- Factor theorem
+- Algebraic identities (factorisation)
+
+---
+
+### The Day Meera Threw a Ball
+
+It's lunch break. Meera throws a ball straight up and shouts: *"How high does it go? When does it land?"*
+
+Her friend Kabir says: *"Write a rule for its height."*
+
+They think about it. At t=0 the ball is at the ground. The higher you throw, the faster it starts, then gravity pulls it back. Kabir writes:
+
+**height = −5t² + 20t**
+
+One letter (t = seconds). A few terms. You put time in, you get height out. That's a **polynomial** — nothing more than a rule with one variable.
+
+Now Meera wants to know: *when does the ball hit the ground again?* Ground means height = 0. So they need −5t² + 20t = 0. They take out −5t as common: **−5t(t − 4) = 0**. Either t = 0 (when she threw it) or **t = 4** (when it lands). Those two answers — 0 and 4 — are the **zeroes of the polynomial**.
+
+Kabir asks: *"What's the height exactly at t = 3 seconds?"* Meera doesn't re-draw anything. She just puts 3 into the rule: −5(9) + 20(3) = −45 + 60 = **15**. Done in one step. That "just plug it in" shortcut is the **Remainder Theorem**.
+
+Then Kabir wonders: *"Can I break −5t² + 20t into two simpler pieces?"* They try −5t and (t − 4). Multiply them: −5t(t − 4) = −5t² + 20t. Exact match. No leftovers. When something divides with zero remainder, it's a **factor** — that's the **Factor Theorem**.
+
+Last thing. The PE teacher overhears and asks: *"What's (t + 4)²?"* Meera writes instantly: t² + 8t + 16. She didn't multiply it out — she just knows the pattern. These ready-made patterns are **algebraic identities**: (a+b)² = a² + 2ab + b², always, for any a and b.
+
+---
+
+> A polynomial is a rule for one variable. Zeroes are when the output hits zero. The Remainder Theorem says: just plug in, don't divide. The Factor Theorem says: zero output means it divides cleanly. Identities are patterns you memorise so you skip the working.
+
+
+Chapter 3: Coordinate Geometry
+- Cartesian system (axes, quadrants, origin)
+- Plotting points in the coordinate plane
+- Linear equations in two variables as graphs
+
+Chapter 4: Linear Equations in Two Variables
+- Linear equations: ax + by + c = 0
+- Solution of a linear equation
+- Graph of a linear equation in two variables
+- Equations of lines parallel to axes
+
+Chapter 5: Introduction to Euclid's Geometry
+- Euclid's definitions, axioms, postulates
+- Equivalent versions of Euclid's fifth postulate
+
+Chapter 6: Lines and Angles
+- Basic terms: line segment, ray, collinear points, angles
+- Intersecting and non-intersecting lines
+- Pairs of angles (complementary, supplementary, adjacent, linear pair, vertically opposite)
+- Parallel lines and a transversal
+- Angle sum property of a triangle
+
+Chapter 7: Triangles
+- Congruence of triangles (SSS, SAS, ASA, AAS, RHS)
+- Properties of isosceles triangles
+- Inequalities in triangles
+
+Chapter 8: Quadrilaterals
+- Properties of quadrilaterals
+- Types: parallelogram, rectangle, rhombus, square, trapezium
+- Mid-point theorem
+
+Chapter 9: Areas of Parallelograms and Triangles
+- Figures on the same base and between the same parallels
+- Area of parallelogram and triangle (relationship)
+
+Chapter 10: Circles
+- Definitions: chord, arc, sector, segment
+- Angle subtended by a chord at a point
+- Perpendicular from centre to a chord
+- Cyclic quadrilaterals
+
+Chapter 11: Constructions
+- Bisecting a line segment and angles
+- Constructing triangles given various conditions
+
+Chapter 12: Heron's Formula
+- Area of a triangle using Heron's formula
+- Application to quadrilaterals
+
+Chapter 13: Surface Areas and Volumes
+- Cuboid, cube
+- Right circular cylinder
+- Right circular cone
+- Sphere and hemisphere
+
+Chapter 14: Statistics
+- Collection and presentation of data
+- Bar graphs, histograms, frequency polygons
+- Measures of central tendency (mean, median, mode)
+
+Chapter 15: Probability
+- Empirical probability
+- Experiments and events
+- Probability of an event (experimental approach)
+
+Note: The 2023-24 revised NCERT syllabus removed some chapters (e.g., Chapter 9 on areas,
+Chapter 11 on constructions) from the exam scope. Confirm with the latest NCERT/CBSE syllabus
+notification for the current academic year.
