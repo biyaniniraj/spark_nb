@@ -31,16 +31,34 @@
       <div class="apps-section" v-if="apps.length">
         <div class="section-header">
           <div class="section-icon-wrap" style="background:#D1FAE5">🌍</div>
-          <div><div class="section-title">{{ t('detail.apps.title') }}</div></div>
+          <div>
+            <div class="section-title">{{ t('detail.apps.title') }}</div>
+            <div class="section-sub">{{ t('detail.apps.sub') }}</div>
+          </div>
         </div>
         <div class="apps-grid">
           <AppCard v-for="app in apps" :key="app.id" :app="app" />
         </div>
       </div>
+      <div class="voices-section" v-if="professionVoices.length">
+        <div class="section-header">
+          <div class="section-icon-wrap" style="background:#EDE9FE">🎙️</div>
+          <div>
+            <div class="section-title">{{ t('detail.voices.title') }}</div>
+            <div class="section-sub">{{ t('detail.voices.sub') }}</div>
+          </div>
+        </div>
+        <div class="voices-grid">
+          <ProfessionVoiceCard v-for="v in professionVoices" :key="v.id" :voice="v" />
+        </div>
+      </div>
       <div class="careers-section" v-if="careers.length">
         <div class="section-header">
           <div class="section-icon-wrap" style="background:#FEF3C7">💼</div>
-          <div><div class="section-title">{{ t('detail.careers.title') }}</div></div>
+          <div>
+            <div class="section-title">{{ t('detail.careers.title') }}</div>
+            <div class="section-sub">{{ t('detail.careers.sub') }}</div>
+          </div>
         </div>
         <div class="career-grid">
           <CareerCard v-for="c in careers" :key="c.career_id" :career="c" @select="router.push(`/careers/${c.career_id}`)" />
@@ -59,6 +77,7 @@ import BadgePill from '@/components/ui/BadgePill.vue'
 import SimplyPutCard from '@/components/detail/SimplyPutCard.vue'
 import AppCard from '@/components/detail/AppCard.vue'
 import CareerCard from '@/components/detail/CareerCard.vue'
+import ProfessionVoiceCard from '@/components/detail/ProfessionVoiceCard.vue'
 import { useLangStore } from '@/stores/lang'
 import { useBookmarksStore } from '@/stores/bookmarks'
 import { api } from '@/lib/api'
@@ -75,6 +94,7 @@ const expert = ref(null)
 const apps = ref([])
 const careers = ref([])
 const allContent = ref([])
+const professionVoices = ref([])
 
 const content = computed(() => {
   const row = allContent.value.find(c => c.lang === lang.current) || allContent.value[0]
@@ -91,6 +111,7 @@ onMounted(async () => {
   apps.value = await api.get(`/topics/${id}/apps`)
   careers.value = await api.get(`/careers/by-topic/${id}`)
   expert.value = await api.get(`/topics/${id}/expert`).catch(() => null)
+  professionVoices.value = await api.get(`/topics/${id}/profession-voices`).catch(() => [])
 })
 
 async function toggleBookmark() {
@@ -111,10 +132,12 @@ async function toggleBookmark() {
 .bookmark-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: var(--radius-sm); border: 1.5px solid rgba(255,255,255,0.2); background: transparent; color: var(--muted); font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all var(--transition); }
 .bookmark-btn:hover { background: rgba(245,158,11,0.15); border-color: var(--amber); color: var(--amber); }
 .detail-body { max-width: 960px; margin: 0 auto; width: 100%; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-.apps-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 1px; background: var(--lgray); }
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 1px; background: var(--lgray); }
+.voices-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 1.2rem; padding: 1.2rem 1.5rem; }
 .career-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 1rem; padding: 1.2rem 1.5rem; }
 .section-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--lgray); display: flex; align-items: center; gap: 0.75rem; }
-.section-icon-wrap { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.section-icon-wrap { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
 .section-title { font-size: 1rem; font-weight: 600; color: var(--dktext); }
-.apps-section, .careers-section { background: var(--white); border-radius: var(--radius); border: 1px solid var(--lgray); overflow: hidden; }
+.section-sub { font-size: 0.78rem; color: var(--gray); margin-top: 0.15rem; }
+.apps-section, .careers-section, .voices-section { background: var(--white); border-radius: var(--radius); border: 1px solid var(--lgray); overflow: hidden; }
 </style>

@@ -5,37 +5,52 @@ from app.models.subject import Subject
 
 router = APIRouter()
 
+def _get_plan_info(user_id: str):
+    """Returns (plan_code, selected_subject_ids) for a user."""
+    plan_res = (
+        supabase.table("user_plan")
+        .select("plan_id, enrollment_plans(plan_code)")
+        .eq("user_id", user_id)
+        .eq("is_current", True)
+        .maybe_single()
+        .execute()
+    )
+    if not plan_res.data:
+        return None, set()
+
+    plan_code = (plan_res.data.get("enrollment_plans") or {}).get("plan_code", "")
+
+    sel_res = supabase.table("user_subject_selections").select("subject_id").eq("user_id", user_id).execute()
+    selected = {r["subject_id"] for r in (sel_res.data or [])}
+
+    return plan_code, selected
+
+
 @router.get("/", response_model=list[Subject])
 def list_subjects(x_user_id: Optional[str] = Header(None)):
     res = supabase.table("subjects").select("*").eq("is_active", True).order("sort_order").execute()
     subjects = res.data
 
-    # Determine allowed subject_ids for this user
-    allowed_subject_ids = None  # None = all allowed
+    if not x_user_id:
+        # Unauthenticated — only free preview subjects visible, rest locked
+        for s in subjects:
+            s["is_locked"] = not s["is_free_preview"]
+        return subjects
 
-    if x_user_id:
-        plan_res = supabase.table("user_plan").select("plan_id").eq("user_id", x_user_id).eq("is_current", True).maybe_single().execute()
-        if plan_res.data:
-            plan_id = plan_res.data["plan_id"]
-            rules_res = supabase.table("plan_access_rules").select("subject_id, is_allowed").eq("plan_id", plan_id).execute()
-            rules = rules_res.data or []
-            # Null subject_id in a rule = full access to all subjects
-            if any(r["subject_id"] is None and r.get("is_allowed") for r in rules):
-                allowed_subject_ids = None  # full access
-            else:
-                allowed_subject_ids = {r["subject_id"] for r in rules if r["subject_id"] is not None and r.get("is_allowed")}
-        else:
-            allowed_subject_ids = set()  # no plan = lock all non-free subjects
+    plan_code, selected_subject_ids = _get_plan_info(x_user_id)
 
     for s in subjects:
-        if s["is_free_preview"]:
+        if plan_code and plan_code.upper() == "PAID_FULL":
             s["is_locked"] = False
-        elif allowed_subject_ids is None:
-            s["is_locked"] = False
+        elif plan_code and plan_code.upper() == "PAID_LIMITED":
+            # is_free_preview subjects always accessible; others only if explicitly selected
+            s["is_locked"] = not (s["is_free_preview"] or s["subject_id"] in selected_subject_ids)
         else:
-            s["is_locked"] = s["subject_id"] not in allowed_subject_ids
+            # FREE or no plan — only is_free_preview subjects
+            s["is_locked"] = not s["is_free_preview"]
 
     return subjects
+
 
 @router.get("/{subject_id}", response_model=Subject)
 def get_subject(subject_id: str):

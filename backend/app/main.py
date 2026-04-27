@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import subjects, topics, careers, quiz, certs, bookmarks
+from app.routers import subjects, topics, careers, quiz, certs, bookmarks, users
 
 app = FastAPI(title="Spark API", version="0.1.0")
 
@@ -19,6 +19,7 @@ app.include_router(careers.router,   prefix="/api/careers",   tags=["careers"])
 app.include_router(quiz.router,      prefix="/api/quiz",      tags=["quiz"])
 app.include_router(certs.router,     prefix="/api/certs",     tags=["certs"])
 app.include_router(bookmarks.router, prefix="/api/bookmarks", tags=["bookmarks"])
+app.include_router(users.router,     prefix="/api/users",     tags=["users"])
 
 @app.get("/health")
 def health():

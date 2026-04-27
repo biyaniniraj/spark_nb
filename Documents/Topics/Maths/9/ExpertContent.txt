@@ -1,0 +1,112 @@
+NCERT Mathematics - Class 9 | Chapter 1: Number Systems
+Expert-Ready Content for Guest Sessions
+=========================================
+
+PROFESSION 1: Civil Engineer
+------------------------------
+"Every day I work with numbers that aren't clean or whole. When I design a staircase or
+a ramp, I calculate the diagonal length using the Pythagoras theorem — and almost always,
+the answer is an irrational number like √5 or √13. I can't avoid it. I use that number to
+order the exact length of steel rod or concrete support needed. If I round off too early,
+the structure shifts by millimetres — and over a 10-storey building, that millimetre becomes
+centimetres by the top floor. The number line I studied in Class 9 is something I use every
+single day — except now, mistakes cost crores."
+
+Sub-topic link: Irrational numbers, real numbers, operations on real numbers.
+
+
+PROFESSION 2: Data Scientist / AI Engineer
+-------------------------------------------
+"My job is to teach computers to make decisions. Every piece of data I feed a machine
+learning model — a user's age, their purchase history, their location — is a real number.
+The model's output is a probability, always a real number between 0 and 1. When I train a
+model, I use exponent-based math thousands of times per second — the formula that tells the
+model how wrong it is and how much to correct itself is literally e raised to a power. I
+remember being confused about laws of exponents in school. Now I can't do a single day's
+work without them."
+
+Sub-topic link: Laws of exponents, real numbers, operations.
+
+
+PROFESSION 3: Chartered Accountant (CA)
+----------------------------------------
+"People think accounting is just addition and subtraction. It isn't. When I calculate
+compound interest for a client's investment, or depreciate an asset over 7 years, the
+numbers I get are never whole numbers. They're rational decimals at best, and sometimes
+they don't terminate at all. I decide where to round, what the Income Tax Act allows, and
+how to present it. I also work with negative numbers when losses are involved — the entire
+real number line, positive and negative, is my workspace. The foundation of everything I do
+professionally was laid in one chapter of Class 9 Maths."
+
+Sub-topic link: Rational numbers, operations on real numbers.
+
+
+PROFESSION 4: ISRO / Space Scientist
+--------------------------------------
+"When we planned Chandrayaan-3's lunar orbit insertion, we calculated distances in hundreds
+of thousands of kilometres — numbers so large we can only write them using powers of 10.
+That's the laws of exponents in direct use. A spacecraft travelling at 1.6 km/s needs fuel
+burn corrections calculated to 5 decimal places. We can't round off. We can't say 'close
+enough.' The moon is 384,400 km away — if our exponent calculation is off by even one power,
+we miss it entirely. The reason I joined ISRO is because I loved how numbers could describe
+the universe. It started with a number line in school."
+
+Sub-topic link: Laws of exponents, scientific notation, real numbers.
+
+
+---
+
+NCERT Mathematics - Class 9 | Chapter 2: Polynomials
+Expert-Ready Content for Guest Sessions
+=========================================
+
+PROFESSION 1: Software Engineer / Game Developer
+--------------------------------------------------
+"In game development, when a character jumps — the arc is a polynomial. Specifically a
+quadratic: h(t) = -5t² + 10t. I need to find when the character lands, which means finding
+the zeroes of that polynomial. Every time I set up collision detection, I'm asking: 'At what
+t does h(t) = 0?' That's directly the zeroes of a polynomial. In my first job at a Pune
+gaming studio, I realised the 'useless' Factor Theorem from Class 9 was the exact tool I
+needed to factorise physics equations and make characters move smoothly. I use it every
+sprint."
+
+Sub-topic link: Zeroes of a polynomial, factor theorem, polynomials in one variable.
+
+
+PROFESSION 2: Civil / Structural Engineer
+------------------------------------------
+"The graceful curve of a flyover or a suspension bridge is not drawn freehand — it's a
+polynomial. A parabolic arch follows the equation y = ax² + bx + c. The two points where
+the arch meets the ground are the zeroes. I calculate those zeroes to decide where to place
+the foundations. If I get that wrong, the arch carries unequal loads and risks cracking.
+Every time I design a curved structure — a stadium roof, a metro viaduct — I'm applying the
+Factor Theorem and the Remainder Theorem to check if my polynomial fits the physical
+constraints."
+
+Sub-topic link: Zeroes of a polynomial, factor theorem, remainder theorem.
+
+
+PROFESSION 3: Telecom Engineer (4G/5G Networks)
+-------------------------------------------------
+"When your phone sends a message, errors creep in during transmission — bits flip, signals
+degrade. We fix this using Reed-Solomon error correction, which is built entirely on
+polynomial arithmetic. We encode your data as a polynomial, transmit it, and at the other
+end we divide the received polynomial by known factors and check the remainder. If the
+remainder is zero, the message is perfect. If not, we know exactly where the error is. The
+Remainder Theorem — if you divide a polynomial p(x) by (x - a), the remainder is p(a) — is
+literally the mathematical heart of 4G and 5G communication."
+
+Sub-topic link: Remainder theorem, factor theorem, polynomials in one variable.
+
+
+PROFESSION 4: Data Scientist / Business Analyst
+-------------------------------------------------
+"When I model how sales grow over a quarter, a straight line (degree 1 polynomial) is
+almost never enough. I fit a degree-2 or degree-3 polynomial to the data — this is called
+polynomial regression. The zeroes of that curve tell me the break-even points: where does
+revenue equal cost? The algebraic identities I memorised in school — (a+b)², (a-b)²,
+(a+b)(a-b) — let me expand and simplify the expressions I derive from data. What looked
+like rote learning at 14 turns out to be the fastest way to simplify complex models under
+deadline pressure."
+
+Sub-topic link: Algebraic identities, zeroes of a polynomial, polynomials in one variable.
